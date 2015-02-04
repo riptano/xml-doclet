@@ -56,7 +56,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 0);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   // }
   //
   // /**
@@ -86,7 +85,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 1);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   // verify method
   //   assertEquals(method.getComment(), "method1");
@@ -131,7 +129,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 0);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 1);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   // verify interface
   //   assertEquals(interfaceNode.getInterface().get(0).getQualified(), java.io.Serializable.class.getName());
@@ -164,7 +161,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 0);
   //   assertEquals(interfaceNode.getAnnotation().size(), 1);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   // verify deprecated annotation
   //   // test annotation 'deprecated' on class
@@ -200,7 +196,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 1);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   // verify method
   //   assertEquals(method.getComment(), "method1");
@@ -247,7 +242,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 0);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   assertEquals(typeParameterNode.getName(), "Fun");
   //   assertEquals(typeParameterNode.getBound().size(), 0);
@@ -280,7 +274,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 0);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   assertEquals(typeParameterNode.getBound().size(), 1);
   //   assertEquals(typeParameterNode.getBound().get(0), "java.lang.Number");
@@ -314,7 +307,6 @@ public class InterfaceTest extends AbstractTestParent {
   //   assertEquals(interfaceNode.getMethod().size(), 0);
   //   assertEquals(interfaceNode.getAnnotation().size(), 0);
   //   assertEquals(interfaceNode.getInterface().size(), 0);
-  //   assertTrue(interfaceNode.isIncluded());
   //
   //   assertEquals(typeParameterNode.getBound().size(), 2);
   //   assertEquals(typeParameterNode.getBound().get(0), "java.lang.Number");

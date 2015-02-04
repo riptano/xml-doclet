@@ -52,7 +52,6 @@ public class AnnotationTest extends AbstractTestParent {
 		assertEquals(annotationNode.getFull(), Annotation1.class.getName());
 		assertEquals(annotationNode.getScope(), "public");
 		assertEquals(annotationNode.getElement().size(), 0);
-		assertTrue(annotationNode.isIncluded());
 	}
   //
   // /**
@@ -81,7 +80,6 @@ public class AnnotationTest extends AbstractTestParent {
   //   assertEquals(annotationNode.getScope(), "public");
   //   assertEquals(annotationNode.getAnnotation().size(), 1);
   //   assertEquals(annotationNode.getElement().size(), 0);
-  //   assertTrue(annotationNode.isIncluded());
   //
   //   // test annotation 'deprecated' on class
   //   assertEquals(annotationInstance.getFull(), "java.lang.Deprecated");
@@ -114,7 +112,6 @@ public class AnnotationTest extends AbstractTestParent {
 		assertEquals(annotationNode.getFull(), Annotation3.class.getName());
 		assertEquals(annotationNode.getScope(), "public");
 		assertEquals(annotationNode.getElement().size(), 1);
-		assertTrue(annotationNode.isIncluded());
 
 		// test annotation element
 		assertEquals(element.getName(), "id");
@@ -147,6 +144,5 @@ public class AnnotationTest extends AbstractTestParent {
 		assertEquals(annotationNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Annotation4");
 		assertEquals(annotationNode.getScope(), "");
 		assertEquals(annotationNode.getElement().size(), 0);
-		assertTrue(annotationNode.isIncluded());
 	}
 }

@@ -224,7 +224,6 @@ public class Parser {
     annotationNode.setName(classDoc.name());
     annotationNode.setFull(classDoc.qualifiedName());
     annotationNode.setComment(parseComment(classDoc));
-    annotationNode.setIncluded(classDoc.isIncluded());
     annotationNode.setScope(parseScope(classDoc));
 
     Tag[] tags;
@@ -323,7 +322,6 @@ public class Parser {
     enumNode.setName(classDoc.name());
     enumNode.setFull(classDoc.qualifiedName());
     enumNode.setComment(parseComment(classDoc));
-    enumNode.setIncluded(classDoc.isIncluded());
     enumNode.setScope(parseScope(classDoc));
 
     Tag[] tags;
@@ -413,7 +411,6 @@ public class Parser {
     interfaceNode.setName(classDoc.name());
     interfaceNode.setFull(classDoc.qualifiedName());
     interfaceNode.setComment(parseComment(classDoc));
-    interfaceNode.setIncluded(classDoc.isIncluded());
     interfaceNode.setScope(parseScope(classDoc));
 
     for (TypeVariable typeVariable : classDoc.typeParameters()) {
@@ -464,7 +461,6 @@ public class Parser {
     classNode.setError(classDoc.isError());
     classNode.setException(classDoc.isException());
     classNode.setExternalizable(classDoc.isExternalizable());
-    classNode.setIncluded(classDoc.isIncluded());
     classNode.setSerializable(classDoc.isSerializable());
     classNode.setScope(parseScope(classDoc));
 
@@ -531,7 +527,6 @@ public class Parser {
     constructorNode.setFull(constructorDoc.qualifiedName());
     constructorNode.setComment(parseComment(constructorDoc));
     constructorNode.setScope(parseScope(constructorDoc));
-    constructorNode.setIncluded(constructorDoc.isIncluded());
     constructorNode.setFinal(constructorDoc.isFinal());
     constructorNode.setNative(constructorDoc.isNative());
     constructorNode.setStatic(constructorDoc.isStatic());
@@ -614,7 +609,6 @@ public class Parser {
     methodNode.setComment(parseComment(methodDoc));
     methodNode.setScope(parseScope(methodDoc));
     methodNode.setAbstract(methodDoc.isAbstract());
-    methodNode.setIncluded(methodDoc.isIncluded());
     methodNode.setFinal(methodDoc.isFinal());
     methodNode.setNative(methodDoc.isNative());
     methodNode.setStatic(methodDoc.isStatic());

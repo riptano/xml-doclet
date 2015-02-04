@@ -75,7 +75,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -113,7 +112,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -155,7 +153,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -211,7 +208,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -265,7 +261,6 @@ public class ClassTest extends AbstractTestParent {
 				"com.github.markusbernhardt.xmldoclet.simpledata.Class3");
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -303,7 +298,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
 		assertEquals(classNode.getGeneric().size(), 0);
@@ -346,7 +340,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -383,7 +376,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertTrue(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -420,7 +412,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertTrue(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertTrue(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -457,7 +448,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -494,7 +484,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), java.lang.Exception.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertTrue(classNode.isSerializable());
 		assertTrue(classNode.isException());
 		assertFalse(classNode.isError());
@@ -531,7 +520,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), java.lang.Error.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertTrue(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertTrue(classNode.isError());
@@ -570,7 +558,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -612,7 +599,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
@@ -656,7 +642,6 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
-		assertTrue(classNode.isIncluded());
 		assertFalse(classNode.isSerializable());
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());

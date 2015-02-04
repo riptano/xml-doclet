@@ -51,7 +51,6 @@
 		<xs:attribute name="name" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
-		<xs:attribute name="included" type="xs:boolean" default="true" />
 	</xs:complexType>
 
 	<xs:complexType name="annotationElement">
@@ -102,7 +101,6 @@
 		<xs:attribute name="name" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
-		<xs:attribute name="included" type="xs:boolean" default="true" />
 	</xs:complexType>
 
 	<xs:complexType name="enumValue">
@@ -137,7 +135,6 @@
 		<xs:attribute name="name" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
-		<xs:attribute name="included" type="xs:boolean" default="true" />
 	</xs:complexType>
 
 	<xs:complexType name="class">
@@ -170,7 +167,6 @@
 		<xs:attribute name="exception" type="xs:boolean" default="false" />
 		<xs:attribute name="externalizable" type="xs:boolean"
 			default="false" />
-		<xs:attribute name="included" type="xs:boolean" default="true" />
 		<xs:attribute name="serializable" type="xs:boolean"
 			default="false" />
 	</xs:complexType>
@@ -192,7 +188,6 @@
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="final" type="xs:boolean" default="false" />
-		<xs:attribute name="included" type="xs:boolean" default="true" />
 		<xs:attribute name="native" type="xs:boolean" default="false" />
 		<xs:attribute name="synchronized" type="xs:boolean"
 			default="false" />
@@ -219,7 +214,6 @@
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="abstract" type="xs:boolean" default="false" />
 		<xs:attribute name="final" type="xs:boolean" default="false" />
-		<xs:attribute name="included" type="xs:boolean" default="true" />
 		<xs:attribute name="native" type="xs:boolean" default="false" />
 		<xs:attribute name="synchronized" type="xs:boolean"
 			default="false" />
