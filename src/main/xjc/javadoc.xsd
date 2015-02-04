@@ -13,7 +13,10 @@
 	<xs:complexType name="package">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
 			<xs:element name="annotation" type="annotation" minOccurs="0"
 				maxOccurs="unbounded" />
@@ -27,77 +30,89 @@
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
 
+	<xs:complexType name="link">
+		<xs:attribute name="href" type="xs:string" />
+		<xs:attribute name="text" type="xs:string" />
+	</xs:complexType>
+
 	<xs:complexType name="annotation">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="author" type="xs:string" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
 			<xs:element name="element" type="annotationElement"
 				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="included" type="xs:boolean" default="true" />
 	</xs:complexType>
 
 	<xs:complexType name="annotationElement">
 		<xs:sequence>
-			<xs:element name="type" type="typeInfo" minOccurs="0" />
+			<xs:element name="comment" type="xs:string" minOccurs="0" />
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="link" type="link" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="return" type="return" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="default" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="annotationInstance">
+	<xs:complexType name="return">
 		<xs:sequence>
-			<xs:element name="argument" type="annotationArgument"
-				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="comment" type="xs:string" minOccurs="0" />
+			<xs:element name="type" type="typeInfo" minOccurs="0" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="annotationArgument">
+	<xs:complexType name="throws">
 		<xs:sequence>
+			<xs:element name="comment" type="xs:string" minOccurs="0" />
 			<xs:element name="type" type="typeInfo" minOccurs="0" />
-			<xs:element name="value" type="xs:string" minOccurs="0"
-				maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="primitive" type="xs:boolean" default="false" />
-		<xs:attribute name="array" type="xs:boolean" default="false" />
 	</xs:complexType>
 
 	<xs:complexType name="enum">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="author" type="xs:string" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
 			<xs:element name="class" type="typeInfo" minOccurs="0" />
 			<xs:element name="interface" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="constant" type="enumConstant" minOccurs="0"
+			<xs:element name="value" type="enumValue" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="included" type="xs:boolean" default="true" />
 	</xs:complexType>
 
-	<xs:complexType name="enumConstant">
+	<xs:complexType name="enumValue">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
@@ -105,19 +120,22 @@
 	<xs:complexType name="interface">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="author" type="xs:string" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="generic" type="typeParameter" minOccurs="0"
+			<xs:element name="link" type="link" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="generic" type="generic" minOccurs="0"
 				maxOccurs="unbounded" />
 			<xs:element name="interface" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
 			<xs:element name="method" type="method" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="included" type="xs:boolean" default="true" />
 	</xs:complexType>
@@ -125,9 +143,14 @@
 	<xs:complexType name="class">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="author" type="xs:string" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="generic" type="typeParameter" minOccurs="0"
+			<xs:element name="link" type="link" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="generic" type="generic" minOccurs="0"
 				maxOccurs="unbounded" />
 			<xs:element name="class" type="typeInfo" minOccurs="0" />
 			<xs:element name="interface" type="typeInfo" minOccurs="0"
@@ -136,13 +159,11 @@
 				minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="method" type="method" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="field" type="field" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="abstract" type="xs:boolean" default="false" />
 		<xs:attribute name="error" type="xs:boolean" default="false" />
@@ -157,18 +178,18 @@
 	<xs:complexType name="constructor">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="parameter" type="methodParameter"
+			<xs:element name="param" type="param"
 				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="exception" type="typeInfo" minOccurs="0"
+			<xs:element name="throws" type="throws" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="signature" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="final" type="xs:boolean" default="false" />
 		<xs:attribute name="included" type="xs:boolean" default="true" />
@@ -182,19 +203,19 @@
 	<xs:complexType name="method">
 		<xs:sequence>
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="parameter" type="methodParameter"
+			<xs:element name="param" type="param"
 				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="return" type="typeInfo" minOccurs="0" />
-			<xs:element name="exception" type="typeInfo" minOccurs="0"
+			<xs:element name="throws" type="throws" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="return" type="return" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="signature" type="xs:string" />
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="abstract" type="xs:boolean" default="false" />
 		<xs:attribute name="final" type="xs:boolean" default="false" />
@@ -206,24 +227,24 @@
 		<xs:attribute name="varArgs" type="xs:boolean" default="false" />
 	</xs:complexType>
 
-	<xs:complexType name="methodParameter">
+	<xs:complexType name="param">
 		<xs:sequence>
+			<xs:element name="comment" type="xs:string" minOccurs="0" />
 			<xs:element name="type" type="typeInfo" minOccurs="0" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="field">
 		<xs:sequence>
-			<xs:element name="type" type="typeInfo" minOccurs="0" />
 			<xs:element name="comment" type="xs:string" minOccurs="0" />
-			<xs:element name="tag" type="tagInfo" minOccurs="0"
+			<xs:element name="deprecated" type="xs:string" minOccurs="0" />
+			<xs:element name="since" type="xs:string" minOccurs="0" />
+			<xs:element name="version" type="xs:string" minOccurs="0" />
+			<xs:element name="link" type="link" minOccurs="0"
 				maxOccurs="unbounded" />
-			<xs:element name="constant" type="xs:string" minOccurs="0" />
-			<xs:element name="annotation" type="annotationInstance"
-				minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="return" type="return" minOccurs="0" />
+			<xs:element name="default" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
 		<xs:attribute name="qualified" type="xs:string" />
@@ -240,11 +261,11 @@
 			<xs:element name="generic" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute name="qualified" type="xs:string" />
+		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="dimension" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="typeParameter">
+	<xs:complexType name="generic">
 		<xs:sequence>
 			<xs:element name="bound" type="xs:string" minOccurs="0"
 				maxOccurs="unbounded" />
@@ -259,11 +280,6 @@
 			<xs:element name="superBound" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="tagInfo">
-		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="text" type="xs:string" />
 	</xs:complexType>
 
 	<xs:simpleType name="scope">

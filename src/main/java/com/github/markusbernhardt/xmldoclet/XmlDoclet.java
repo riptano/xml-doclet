@@ -135,7 +135,7 @@ public class XmlDoclet {
 	 */
 	public static boolean start(RootDoc rootDoc) {
 		CommandLine commandLine = parseCommandLine(rootDoc.options());
-		Parser parser = new Parser();
+		Parser parser = new Parser("/");
 		root = parser.parseRootDoc(rootDoc);
 		save(commandLine, root);
 		return true;

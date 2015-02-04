@@ -25,7 +25,8 @@ import com.github.markusbernhardt.xmldoclet.xjc.Method;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
 import com.github.markusbernhardt.xmldoclet.xjc.TypeInfo;
-import com.github.markusbernhardt.xmldoclet.xjc.TypeParameter;
+import com.github.markusbernhardt.xmldoclet.xjc.Return;
+import com.github.markusbernhardt.xmldoclet.xjc.Generic;
 
 /**
  * Unit test group for Classes
@@ -56,23 +57,22 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
 		assertEquals(packageNode.getInterface().size(), 0);
 		assertEquals(packageNode.getClazz().size(), 1);
 
-		assertNull(classNode.getComment());
+		assertEquals(classNode.getComment(), "");
 		assertEquals(classNode.getName(), Class1.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class1.class.getName());
+		assertEquals(classNode.getFull(), Class1.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getField().size(), 0);
 		assertEquals(classNode.getMethod().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -95,7 +95,7 @@ public class ClassTest extends AbstractTestParent {
 		Constructor constructor = classNode.getConstructor().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -105,13 +105,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class2");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class2.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class2.class.getName());
+		assertEquals(classNode.getFull(), Class2.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getField().size(), 0);
 		assertEquals(classNode.getMethod().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -122,8 +121,7 @@ public class ClassTest extends AbstractTestParent {
 
 		assertEquals(constructor.getComment(), "Constructor1");
 		assertEquals(constructor.getName(), "Class2");
-		assertEquals(constructor.getParameter().size(), 0);
-		assertEquals(constructor.getAnnotation().size(), 0);
+		assertEquals(constructor.getParam().size(), 0);
 	}
 
 	/**
@@ -139,7 +137,7 @@ public class ClassTest extends AbstractTestParent {
 		Method method = classNode.getMethod().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -149,13 +147,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class3");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class3.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class3.class.getName());
+		assertEquals(classNode.getFull(), Class3.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 1);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -166,23 +163,21 @@ public class ClassTest extends AbstractTestParent {
 
 		assertEquals(method.getComment(), "method1");
 		assertEquals(method.getName(), "method1");
-		assertEquals(method.getSignature(), "()");
 		assertFalse(method.isFinal());
 		assertFalse(method.isNative());
 		assertFalse(method.isStatic());
 		assertFalse(method.isSynchronized());
 		assertFalse(method.isVarArgs());
-		assertEquals(method.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class3.method1");
+		assertEquals(method.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class3.method1");
 		assertEquals(method.getScope(), "public");
-		assertEquals(method.getAnnotation().size(), 0);
-		assertEquals(method.getParameter().size(), 0);
-		assertEquals(method.getException().size(), 0);
+		assertEquals(method.getParam().size(), 0);
+		assertEquals(method.getThrows().size(), 0);
 
-		TypeInfo returnNode = method.getReturn();
-		assertEquals(returnNode.getQualified(), "int");
-		assertNull(returnNode.getDimension());
-		assertEquals(returnNode.getGeneric().size(), 0);
-		assertNull(returnNode.getWildcard());
+		Return returnNode = method.getReturn();
+		assertEquals(returnNode.getType().getFull(), "int");
+		assertNull(returnNode.getType().getDimension());
+		assertEquals(returnNode.getType().getGeneric().size(), 0);
+		assertNull(returnNode.getType().getWildcard());
 	}
 
 	/**
@@ -198,7 +193,7 @@ public class ClassTest extends AbstractTestParent {
 		Field field = classNode.getField().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -208,13 +203,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class4");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class4.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class4.class.getName());
+		assertEquals(classNode.getFull(), Class4.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getField().size(), 1);
 		assertEquals(classNode.getMethod().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -227,16 +221,15 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(field.getComment(), "field1");
 		assertEquals(field.getName(), "field1");
 		assertEquals(field.getScope(), "public");
-		assertEquals(field.getType().getQualified(), "int");
-		assertNull(field.getType().getDimension());
-		assertEquals(field.getType().getGeneric().size(), 0);
-		assertNull(field.getType().getWildcard());
+		assertEquals(field.getReturn().getType().getFull(), "int");
+		assertNull(field.getReturn().getType().getDimension());
+		assertEquals(field.getReturn().getType().getGeneric().size(), 0);
+		assertNull(field.getReturn().getType().getWildcard());
 		assertFalse(field.isStatic());
 		assertFalse(field.isTransient());
 		assertFalse(field.isVolatile());
 		assertFalse(field.isFinal());
-		assertNull(field.getConstant());
-		assertEquals(field.getAnnotation().size(), 0);
+		assertNull(field.getDefault());
 	}
 
 	/**
@@ -253,7 +246,7 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -263,13 +256,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class5");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class5.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class5.class.getName());
+		assertEquals(classNode.getFull(), Class5.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(),
+		assertEquals(classNode.getClazz().getFull(),
 				"com.github.markusbernhardt.xmldoclet.simpledata.Class3");
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
@@ -293,7 +285,7 @@ public class ClassTest extends AbstractTestParent {
 		TypeInfo interfaceNode = classNode.getInterface().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -303,13 +295,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class6");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class6.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class6.class.getName());
+		assertEquals(classNode.getFull(), Class6.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 1);
 		assertEquals(classNode.getInterface().size(), 1);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -322,7 +313,7 @@ public class ClassTest extends AbstractTestParent {
 		assertTrue(classNode.isSerializable());
 
 		// verify interface
-		assertEquals(interfaceNode.getQualified(), java.io.Serializable.class.getName());
+		assertEquals(interfaceNode.getFull(), java.io.Serializable.class.getName());
 	}
 
 	/**
@@ -335,10 +326,9 @@ public class ClassTest extends AbstractTestParent {
 
 		Package packageNode = rootNode.getPackage().get(0);
 		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance annotationNode = classNode.getAnnotation().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -348,13 +338,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class7");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class7.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class7.class.getName());
+		assertEquals(classNode.getFull(), Class7.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 1);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -362,11 +351,6 @@ public class ClassTest extends AbstractTestParent {
 		assertFalse(classNode.isException());
 		assertFalse(classNode.isError());
 		assertEquals(classNode.getGeneric().size(), 0);
-
-		// test annotation 'deprecated' on class
-		assertEquals(annotationNode.getQualified(), "java.lang.Deprecated");
-		assertEquals(annotationNode.getName(), "Deprecated");
-		assertEquals(annotationNode.getArgument().size(), 0);
 	}
 
 	/**
@@ -381,7 +365,7 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -391,13 +375,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class8");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class8.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class8.class.getName());
+		assertEquals(classNode.getFull(), Class8.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertTrue(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -419,7 +402,7 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -429,13 +412,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class9");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), Class9.class.getSimpleName());
-		assertEquals(classNode.getQualified(), Class9.class.getName());
+		assertEquals(classNode.getFull(), Class9.class.getName());
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 2);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 1);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertTrue(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -457,7 +439,7 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -467,13 +449,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class10");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), "Class10");
-		assertEquals(classNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class10");
+		assertEquals(classNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class10");
 		assertEquals(classNode.getScope(), "");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -495,7 +476,7 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -505,13 +486,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class11");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), "Class11");
-		assertEquals(classNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class11");
+		assertEquals(classNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class11");
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 1);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), java.lang.Exception.class.getName());
+		assertEquals(classNode.getClazz().getFull(), java.lang.Exception.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -533,7 +513,7 @@ public class ClassTest extends AbstractTestParent {
 		Class classNode = packageNode.getClazz().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -543,13 +523,12 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class12");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), "Class12");
-		assertEquals(classNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class12");
+		assertEquals(classNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class12");
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 1);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), java.lang.Error.class.getName());
+		assertEquals(classNode.getClazz().getFull(), java.lang.Error.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -569,10 +548,10 @@ public class ClassTest extends AbstractTestParent {
 
 		Package packageNode = rootNode.getPackage().get(0);
 		Class classNode = packageNode.getClazz().get(0);
-		TypeParameter typeParameter = classNode.getGeneric().get(0);
+		Generic genericNode = classNode.getGeneric().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -582,14 +561,13 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class13");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), "Class13");
-		assertEquals(classNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class13");
+		assertEquals(classNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class13");
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getGeneric().size(), 1);
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -598,8 +576,8 @@ public class ClassTest extends AbstractTestParent {
 		assertFalse(classNode.isError());
 
 		// check the 'fun' type var
-		assertEquals(typeParameter.getName(), "Fun");
-		assertEquals(typeParameter.getBound().size(), 0);
+		assertEquals(genericNode.getName(), "Fun");
+		assertEquals(genericNode.getBound().size(), 0);
 	}
 
 	/**
@@ -612,10 +590,10 @@ public class ClassTest extends AbstractTestParent {
 
 		Package packageNode = rootNode.getPackage().get(0);
 		Class classNode = packageNode.getClazz().get(0);
-		TypeParameter typeParameter = classNode.getGeneric().get(0);
+		Generic genericNode = classNode.getGeneric().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -625,14 +603,13 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class14");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), "Class14");
-		assertEquals(classNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class14");
+		assertEquals(classNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class14");
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getGeneric().size(), 1);
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -642,9 +619,9 @@ public class ClassTest extends AbstractTestParent {
 
 		// check the 'fun' type var
 
-		assertEquals(typeParameter.getName(), "Fun");
-		assertEquals(typeParameter.getBound().size(), 1);
-		assertEquals(typeParameter.getBound().get(0), Number.class.getName());
+		assertEquals(genericNode.getName(), "Fun");
+		assertEquals(genericNode.getBound().size(), 1);
+		assertEquals(genericNode.getBound().get(0), Number.class.getName());
 	}
 
 	/**
@@ -657,10 +634,10 @@ public class ClassTest extends AbstractTestParent {
 
 		Package packageNode = rootNode.getPackage().get(0);
 		Class classNode = packageNode.getClazz().get(0);
-		TypeParameter typeParameter = classNode.getGeneric().get(0);
+		Generic genericNode = classNode.getGeneric().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertNull(packageNode.getComment());
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 0);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -670,14 +647,13 @@ public class ClassTest extends AbstractTestParent {
 		assertEquals(classNode.getComment(), "Class15");
 		assertEquals(classNode.getConstructor().size(), 1);
 		assertEquals(classNode.getName(), "Class15");
-		assertEquals(classNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Class15");
+		assertEquals(classNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Class15");
 		assertEquals(classNode.getScope(), "public");
 		assertEquals(classNode.getGeneric().size(), 1);
 		assertEquals(classNode.getMethod().size(), 0);
 		assertEquals(classNode.getField().size(), 0);
-		assertEquals(classNode.getAnnotation().size(), 0);
 		assertEquals(classNode.getInterface().size(), 0);
-		assertEquals(classNode.getClazz().getQualified(), Object.class.getName());
+		assertEquals(classNode.getClazz().getFull(), Object.class.getName());
 		assertFalse(classNode.isAbstract());
 		assertFalse(classNode.isExternalizable());
 		assertTrue(classNode.isIncluded());
@@ -686,200 +662,200 @@ public class ClassTest extends AbstractTestParent {
 		assertFalse(classNode.isError());
 
 		// check the 'fun' type var
-		assertEquals(typeParameter.getName(), "Fun");
-		assertEquals(typeParameter.getBound().size(), 2);
-		assertEquals(typeParameter.getBound().get(0), Number.class.getName());
-		assertEquals(typeParameter.getBound().get(1), Runnable.class.getName());
+		assertEquals(genericNode.getName(), "Fun");
+		assertEquals(genericNode.getBound().size(), 2);
+		assertEquals(genericNode.getBound().get(0), Number.class.getName());
+		assertEquals(genericNode.getBound().get(1), Runnable.class.getName());
 	}
 
-	/**
-	 * testing integer annotation argument
-	 */
-	@Test
-	public void testClass16() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class16.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation3.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  // /**
+  //  * testing integer annotation argument
+  //  */
+  // @Test
+  // public void testClass16() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class16.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation3.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getName(), "id");
+  //   assertEquals(argument.getType().getFull(), "int");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), "3");
+  //   assertTrue(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getName(), "id");
-		assertEquals(argument.getType().getQualified(), "int");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), "3");
-		assertTrue(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
+  // /**
+  //  * testing integer array annotation argument
+  //  */
+  // @Test
+  // public void testClass17() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class17.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation5.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "int");
+  //   assertEquals(argument.getValue().size(), 2);
+  //   assertEquals(argument.getValue().get(0), "1");
+  //   assertEquals(argument.getValue().get(1), "2");
+  //   assertTrue(argument.isPrimitive());
+  //   assertTrue(argument.isArray());
+  // }
 
-	/**
-	 * testing integer array annotation argument
-	 */
-	@Test
-	public void testClass17() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class17.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation5.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  // /**
+  //  * testing integer array annotation argument
+  //  */
+  // @Test
+  // public void testClass18() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class18.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation6.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "java.lang.String");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), "hey");
+  //   assertFalse(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "int");
-		assertEquals(argument.getValue().size(), 2);
-		assertEquals(argument.getValue().get(0), "1");
-		assertEquals(argument.getValue().get(1), "2");
-		assertTrue(argument.isPrimitive());
-		assertTrue(argument.isArray());
-	}
+  // /**
+  //  * testing enum annotation argument
+  //  */
+  // @Test
+  // public void testClass19() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class19.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation7.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Enum1.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Enum1");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), "a");
+  //   assertFalse(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-	/**
-	 * testing integer array annotation argument
-	 */
-	@Test
-	public void testClass18() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class18.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation6.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  // /**
+  //  * testing class annotation argument
+  //  */
+  // @Test
+  // public void testClass20() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class20.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation8.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "java.lang.Class");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), "java.lang.String");
+  //   assertFalse(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "java.lang.String");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), "hey");
-		assertFalse(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
+  // /**
+  //  * testing character annotation argument
+  //  */
+  // @Test
+  // public void testClass21() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class21.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation10.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "char");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), Integer.toString((int) 'a'));
+  //   assertTrue(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-	/**
-	 * testing enum annotation argument
-	 */
-	@Test
-	public void testClass19() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class19.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation7.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Enum1.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  // /**
+  //  * testing 0 character annotation argument
+  //  */
+  // @Test
+  // public void testClass22() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class22.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation10.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "char");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), Integer.toString(0));
+  //   assertTrue(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Enum1");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), "a");
-		assertFalse(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
+  // /**
+  //  * testing boolean annotation argument
+  //  */
+  // @Test
+  // public void testClass23() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class23.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation11.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "boolean");
+  //   assertEquals(argument.getValue().size(), 1);
+  //   assertEquals(argument.getValue().get(0), Boolean.TRUE.toString());
+  //   assertTrue(argument.isPrimitive());
+  //   assertFalse(argument.isArray());
+  // }
 
-	/**
-	 * testing class annotation argument
-	 */
-	@Test
-	public void testClass20() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class20.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation8.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
-
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "java.lang.Class");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), "java.lang.String");
-		assertFalse(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
-
-	/**
-	 * testing character annotation argument
-	 */
-	@Test
-	public void testClass21() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class21.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation10.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
-
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "char");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), Integer.toString((int) 'a'));
-		assertTrue(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
-
-	/**
-	 * testing 0 character annotation argument
-	 */
-	@Test
-	public void testClass22() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class22.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation10.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
-
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "char");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), Integer.toString(0));
-		assertTrue(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
-
-	/**
-	 * testing boolean annotation argument
-	 */
-	@Test
-	public void testClass23() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class23.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation11.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
-
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "boolean");
-		assertEquals(argument.getValue().size(), 1);
-		assertEquals(argument.getValue().get(0), Boolean.TRUE.toString());
-		assertTrue(argument.isPrimitive());
-		assertFalse(argument.isArray());
-	}
-
-	/**
-	 * testing empty int array annotation argument
-	 */
-	@Test
-	public void testClass24() {
-		String[] sourceFiles = new String[] {
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class24.java",
-				"./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation5.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
-
-		Package packageNode = rootNode.getPackage().get(0);
-		Class classNode = packageNode.getClazz().get(0);
-		AnnotationInstance instance = classNode.getAnnotation().get(0);
-		AnnotationArgument argument = instance.getArgument().get(0);
-		assertEquals(argument.getType().getQualified(), "int");
-		assertEquals(argument.getValue().size(), 0);
-		assertTrue(argument.isPrimitive());
-		assertTrue(argument.isArray());
-	}
+  // /**
+  //  * testing empty int array annotation argument
+  //  */
+  // @Test
+  // public void testClass24() {
+  //   String[] sourceFiles = new String[] {
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Class24.java",
+  //       "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation5.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Class classNode = packageNode.getClazz().get(0);
+  //   AnnotationInstance instance = classNode.getAnnotation().get(0);
+  //   AnnotationArgument argument = instance.getArgument().get(0);
+  //   assertEquals(argument.getType().getFull(), "int");
+  //   assertEquals(argument.getValue().size(), 0);
+  //   assertTrue(argument.isPrimitive());
+  //   assertTrue(argument.isArray());
+  // }
 }

@@ -1,7 +1,11 @@
 package com.github.markusbernhardt.xmldoclet;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,31 +17,39 @@ import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Class;
 import com.github.markusbernhardt.xmldoclet.xjc.Constructor;
 import com.github.markusbernhardt.xmldoclet.xjc.Enum;
-import com.github.markusbernhardt.xmldoclet.xjc.EnumConstant;
+import com.github.markusbernhardt.xmldoclet.xjc.EnumValue;
 import com.github.markusbernhardt.xmldoclet.xjc.Field;
 import com.github.markusbernhardt.xmldoclet.xjc.Interface;
 import com.github.markusbernhardt.xmldoclet.xjc.Method;
-import com.github.markusbernhardt.xmldoclet.xjc.MethodParameter;
+import com.github.markusbernhardt.xmldoclet.xjc.Param;
 import com.github.markusbernhardt.xmldoclet.xjc.ObjectFactory;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
 import com.github.markusbernhardt.xmldoclet.xjc.TagInfo;
 import com.github.markusbernhardt.xmldoclet.xjc.TypeInfo;
-import com.github.markusbernhardt.xmldoclet.xjc.TypeParameter;
+import com.github.markusbernhardt.xmldoclet.xjc.Generic;
 import com.github.markusbernhardt.xmldoclet.xjc.Wildcard;
+import com.github.markusbernhardt.xmldoclet.xjc.Link;
+import com.github.markusbernhardt.xmldoclet.xjc.Return;
+import com.github.markusbernhardt.xmldoclet.xjc.Throws;
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationTypeDoc;
 import com.sun.javadoc.AnnotationTypeElementDoc;
 import com.sun.javadoc.AnnotationValue;
+import com.sun.javadoc.Doc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.MemberDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.ParamTag;
+import com.sun.javadoc.ThrowsTag;
+import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import com.sun.javadoc.Type;
 import com.sun.javadoc.TypeVariable;
@@ -45,499 +57,774 @@ import com.sun.javadoc.WildcardType;
 
 public class Parser {
 
-	private final static Logger log = LoggerFactory.getLogger(Parser.class);
-
-	protected Map<String, Package> packages = new TreeMap<String, Package>();
-
-	protected ObjectFactory objectFactory = new ObjectFactory();
-
-	/**
-	 * The entry point into parsing the javadoc.
-	 * 
-	 * @param rootDoc
-	 *            The RootDoc intstance obtained via the doclet API
-	 * @return The root node, containing everything parsed from javadoc doclet
-	 */
-	public Root parseRootDoc(RootDoc rootDoc) {
-		Root rootNode = objectFactory.createRoot();
-
-		for (ClassDoc classDoc : rootDoc.classes()) {
-			PackageDoc packageDoc = classDoc.containingPackage();
-
-			Package packageNode = packages.get(packageDoc.name());
-			if (packageNode == null) {
-				packageNode = parsePackage(packageDoc);
-				packages.put(packageDoc.name(), packageNode);
-				rootNode.getPackage().add(packageNode);
-			}
-
-			if (classDoc instanceof AnnotationTypeDoc) {
-				packageNode.getAnnotation().add(parseAnnotationTypeDoc((AnnotationTypeDoc) classDoc));
-			} else if (classDoc.isEnum()) {
-				packageNode.getEnum().add(parseEnum(classDoc));
-			} else if (classDoc.isInterface()) {
-				packageNode.getInterface().add(parseInterface(classDoc));
-			} else {
-				packageNode.getClazz().add(parseClass(classDoc));
-			}
-		}
-
-		return rootNode;
-	}
-
-	protected Package parsePackage(PackageDoc packageDoc) {
-		Package packageNode = objectFactory.createPackage();
-		packageNode.setName(packageDoc.name());
-		String comment = packageDoc.commentText();
-		if (comment.length() > 0) {
-			packageNode.setComment(comment);
-		}
-
-		for (Tag tag : packageDoc.tags()) {
-			packageNode.getTag().add(parseTag(tag));
-		}
-
-		return packageNode;
-	}
-
-	/**
-	 * Parse an annotation.
-	 * 
-	 * @param annotationTypeDoc
-	 *            A AnnotationTypeDoc instance
-	 * @return the annotation node
-	 */
-	protected Annotation parseAnnotationTypeDoc(AnnotationTypeDoc annotationTypeDoc) {
-		Annotation annotationNode = objectFactory.createAnnotation();
-		annotationNode.setName(annotationTypeDoc.name());
-		annotationNode.setQualified(annotationTypeDoc.qualifiedName());
-		String comment = annotationTypeDoc.commentText();
-		if (comment.length() > 0) {
-			annotationNode.setComment(comment);
-		}
-		annotationNode.setIncluded(annotationTypeDoc.isIncluded());
-		annotationNode.setScope(parseScope(annotationTypeDoc));
-
-		for (AnnotationTypeElementDoc annotationTypeElementDoc : annotationTypeDoc.elements()) {
-			annotationNode.getElement().add(parseAnnotationTypeElementDoc(annotationTypeElementDoc));
-		}
-
-		for (AnnotationDesc annotationDesc : annotationTypeDoc.annotations()) {
-			annotationNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, annotationTypeDoc.qualifiedName()));
-		}
-
-		for (Tag tag : annotationTypeDoc.tags()) {
-			annotationNode.getTag().add(parseTag(tag));
-		}
-
-		return annotationNode;
-	}
-
-	/**
-	 * Parse the elements of an annotation
-	 * 
-	 * @param element
-	 *            A AnnotationTypeElementDoc instance
-	 * @return the annotation element node
-	 */
-	protected AnnotationElement parseAnnotationTypeElementDoc(AnnotationTypeElementDoc annotationTypeElementDoc) {
-		AnnotationElement annotationElementNode = objectFactory.createAnnotationElement();
-		annotationElementNode.setName(annotationTypeElementDoc.name());
-		annotationElementNode.setQualified(annotationTypeElementDoc.qualifiedName());
-		annotationElementNode.setType(parseTypeInfo(annotationTypeElementDoc.returnType()));
-
-		AnnotationValue value = annotationTypeElementDoc.defaultValue();
-		if (value != null) {
-			annotationElementNode.setDefault(value.toString());
-		}
-
-		return annotationElementNode;
-	}
-
-	/**
-	 * Parses annotation instances of an annotable program element
-	 * 
-	 * @param annotationDocs
-	 *            Annotations decorated on some program element
-	 * @return representation of annotations
-	 */
-	protected AnnotationInstance parseAnnotationDesc(AnnotationDesc annotationDesc, String programElement) {
-		AnnotationInstance annotationInstanceNode = objectFactory.createAnnotationInstance();
-
-		try {
-			AnnotationTypeDoc annotTypeInfo = annotationDesc.annotationType();
-			annotationInstanceNode.setName(annotTypeInfo.name());
-			annotationInstanceNode.setQualified(annotTypeInfo.qualifiedTypeName());
-		} catch (ClassCastException castException) {
-			log.error("Unable to obtain type data about an annotation found on: " + programElement);
-			log.error("Add to the classpath the class/jar that defines this annotation.");
-		}
-
-		for (AnnotationDesc.ElementValuePair elementValuesPair : annotationDesc.elementValues()) {
-			AnnotationArgument annotationArgumentNode = objectFactory.createAnnotationArgument();
-			annotationArgumentNode.setName(elementValuesPair.element().name());
-
-			Type annotationArgumentType = elementValuesPair.element().returnType();
-			annotationArgumentNode.setType(parseTypeInfo(annotationArgumentType));
-			annotationArgumentNode.setPrimitive(annotationArgumentType.isPrimitive());
-			annotationArgumentNode.setArray(annotationArgumentType.dimension().length() > 0);
-
-			Object objValue = elementValuesPair.value().value();
-			if (objValue instanceof AnnotationValue[]) {
-				for (AnnotationValue annotationValue : (AnnotationValue[]) objValue) {
-					annotationArgumentNode.getValue().add(annotationValue.value().toString());
-				}
-			} else if (objValue instanceof FieldDoc) {
-				annotationArgumentNode.getValue().add(((FieldDoc) objValue).name());
-			} else if (objValue instanceof ClassDoc) {
-				annotationArgumentNode.getValue().add(((ClassDoc) objValue).qualifiedTypeName());
-			} else {
-				annotationArgumentNode.getValue().add(objValue.toString());
-			}
-			annotationInstanceNode.getArgument().add(annotationArgumentNode);
-		}
-
-		return annotationInstanceNode;
-	}
-
-	protected Enum parseEnum(ClassDoc classDoc) {
-		Enum enumNode = objectFactory.createEnum();
-		enumNode.setName(classDoc.name());
-		enumNode.setQualified(classDoc.qualifiedName());
-		String comment = classDoc.commentText();
-		if (comment.length() > 0) {
-			enumNode.setComment(comment);
-		}
-		enumNode.setIncluded(classDoc.isIncluded());
-		enumNode.setScope(parseScope(classDoc));
-
-		Type superClassType = classDoc.superclassType();
-		if (superClassType != null) {
-			enumNode.setClazz(parseTypeInfo(superClassType));
-		}
-
-		for (Type interfaceType : classDoc.interfaceTypes()) {
-			enumNode.getInterface().add(parseTypeInfo(interfaceType));
-		}
-
-		for (FieldDoc field : classDoc.enumConstants()) {
-			enumNode.getConstant().add(parseEnumConstant(field));
-		}
-
-		for (AnnotationDesc annotationDesc : classDoc.annotations()) {
-			enumNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, classDoc.qualifiedName()));
-		}
-
-		for (Tag tag : classDoc.tags()) {
-			enumNode.getTag().add(parseTag(tag));
-		}
-
-		return enumNode;
-	}
-
-	/**
-	 * Parses an enum type definition
-	 * 
-	 * @param fieldDoc
-	 * @return
-	 */
-	protected EnumConstant parseEnumConstant(FieldDoc fieldDoc) {
-		EnumConstant enumConstant = objectFactory.createEnumConstant();
-		enumConstant.setName(fieldDoc.name());
-		String comment = fieldDoc.commentText();
-		if (comment.length() > 0) {
-			enumConstant.setComment(comment);
-		}
-
-		for (AnnotationDesc annotationDesc : fieldDoc.annotations()) {
-			enumConstant.getAnnotation().add(parseAnnotationDesc(annotationDesc, fieldDoc.qualifiedName()));
-		}
-
-		for (Tag tag : fieldDoc.tags()) {
-			enumConstant.getTag().add(parseTag(tag));
-		}
-
-		return enumConstant;
-	}
-
-	protected Interface parseInterface(ClassDoc classDoc) {
-
-		Interface interfaceNode = objectFactory.createInterface();
-		interfaceNode.setName(classDoc.name());
-		interfaceNode.setQualified(classDoc.qualifiedName());
-		String comment = classDoc.commentText();
-		if (comment.length() > 0) {
-			interfaceNode.setComment(comment);
-		}
-		interfaceNode.setIncluded(classDoc.isIncluded());
-		interfaceNode.setScope(parseScope(classDoc));
-
-		for (TypeVariable typeVariable : classDoc.typeParameters()) {
-			interfaceNode.getGeneric().add(parseTypeParameter(typeVariable));
-		}
-
-		for (Type interfaceType : classDoc.interfaceTypes()) {
-			interfaceNode.getInterface().add(parseTypeInfo(interfaceType));
-		}
-
-		for (MethodDoc method : classDoc.methods()) {
-			interfaceNode.getMethod().add(parseMethod(method));
-		}
-
-		for (AnnotationDesc annotationDesc : classDoc.annotations()) {
-			interfaceNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, classDoc.qualifiedName()));
-		}
-
-		for (Tag tag : classDoc.tags()) {
-			interfaceNode.getTag().add(parseTag(tag));
-		}
-
-		return interfaceNode;
-	}
-
-	protected Class parseClass(ClassDoc classDoc) {
-
-		Class classNode = objectFactory.createClass();
-		classNode.setName(classDoc.name());
-		classNode.setQualified(classDoc.qualifiedName());
-		String comment = classDoc.commentText();
-		if (comment.length() > 0) {
-			classNode.setComment(comment);
-		}
-		classNode.setAbstract(classDoc.isAbstract());
-		classNode.setError(classDoc.isError());
-		classNode.setException(classDoc.isException());
-		classNode.setExternalizable(classDoc.isExternalizable());
-		classNode.setIncluded(classDoc.isIncluded());
-		classNode.setSerializable(classDoc.isSerializable());
-		classNode.setScope(parseScope(classDoc));
-
-		for (TypeVariable typeVariable : classDoc.typeParameters()) {
-			classNode.getGeneric().add(parseTypeParameter(typeVariable));
-		}
-
-		Type superClassType = classDoc.superclassType();
-		if (superClassType != null) {
-			classNode.setClazz(parseTypeInfo(superClassType));
-		}
-
-		for (Type interfaceType : classDoc.interfaceTypes()) {
-			classNode.getInterface().add(parseTypeInfo(interfaceType));
-		}
-
-		for (MethodDoc method : classDoc.methods()) {
-			classNode.getMethod().add(parseMethod(method));
-		}
-
-		for (AnnotationDesc annotationDesc : classDoc.annotations()) {
-			classNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, classDoc.qualifiedName()));
-		}
-
-		for (ConstructorDoc constructor : classDoc.constructors()) {
-			classNode.getConstructor().add(parseConstructor(constructor));
-		}
-
-		for (FieldDoc field : classDoc.fields()) {
-			classNode.getField().add(parseField(field));
-		}
-
-		for (Tag tag : classDoc.tags()) {
-			classNode.getTag().add(parseTag(tag));
-		}
-
-		return classNode;
-	}
-
-	protected Constructor parseConstructor(ConstructorDoc constructorDoc) {
-		Constructor constructorNode = objectFactory.createConstructor();
-
-		constructorNode.setName(constructorDoc.name());
-		constructorNode.setQualified(constructorDoc.qualifiedName());
-		String comment = constructorDoc.commentText();
-		if (comment.length() > 0) {
-			constructorNode.setComment(comment);
-		}
-		constructorNode.setScope(parseScope(constructorDoc));
-		constructorNode.setIncluded(constructorDoc.isIncluded());
-		constructorNode.setFinal(constructorDoc.isFinal());
-		constructorNode.setNative(constructorDoc.isNative());
-		constructorNode.setStatic(constructorDoc.isStatic());
-		constructorNode.setSynchronized(constructorDoc.isSynchronized());
-		constructorNode.setVarArgs(constructorDoc.isVarArgs());
-		constructorNode.setSignature(constructorDoc.signature());
-
-		for (Parameter parameter : constructorDoc.parameters()) {
-			constructorNode.getParameter().add(parseMethodParameter(parameter));
-		}
-
-		for (Type exceptionType : constructorDoc.thrownExceptionTypes()) {
-			constructorNode.getException().add(parseTypeInfo(exceptionType));
-		}
-
-		for (AnnotationDesc annotationDesc : constructorDoc.annotations()) {
-			constructorNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, constructorDoc.qualifiedName()));
-		}
-
-		for (Tag tag : constructorDoc.tags()) {
-			constructorNode.getTag().add(parseTag(tag));
-		}
-
-		return constructorNode;
-	}
-
-	protected Method parseMethod(MethodDoc methodDoc) {
-		Method methodNode = objectFactory.createMethod();
-
-		methodNode.setName(methodDoc.name());
-		methodNode.setQualified(methodDoc.qualifiedName());
-		String comment = methodDoc.commentText();
-		if (comment.length() > 0) {
-			methodNode.setComment(comment);
-		}
-		methodNode.setScope(parseScope(methodDoc));
-		methodNode.setAbstract(methodDoc.isAbstract());
-		methodNode.setIncluded(methodDoc.isIncluded());
-		methodNode.setFinal(methodDoc.isFinal());
-		methodNode.setNative(methodDoc.isNative());
-		methodNode.setStatic(methodDoc.isStatic());
-		methodNode.setSynchronized(methodDoc.isSynchronized());
-		methodNode.setVarArgs(methodDoc.isVarArgs());
-		methodNode.setSignature(methodDoc.signature());
-		methodNode.setReturn(parseTypeInfo(methodDoc.returnType()));
-
-		for (Parameter parameter : methodDoc.parameters()) {
-			methodNode.getParameter().add(parseMethodParameter(parameter));
-		}
-
-		for (Type exceptionType : methodDoc.thrownExceptionTypes()) {
-			methodNode.getException().add(parseTypeInfo(exceptionType));
-		}
-
-		for (AnnotationDesc annotationDesc : methodDoc.annotations()) {
-			methodNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, methodDoc.qualifiedName()));
-		}
-
-		for (Tag tag : methodDoc.tags()) {
-			methodNode.getTag().add(parseTag(tag));
-		}
-
-		return methodNode;
-	}
-
-	protected MethodParameter parseMethodParameter(Parameter parameter) {
-		MethodParameter parameterMethodNode = objectFactory.createMethodParameter();
-		parameterMethodNode.setName(parameter.name());
-		parameterMethodNode.setType(parseTypeInfo(parameter.type()));
-
-		for (AnnotationDesc annotationDesc : parameter.annotations()) {
-			parameterMethodNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, parameter.typeName()));
-		}
-
-		return parameterMethodNode;
-	}
-
-	protected Field parseField(FieldDoc fieldDoc) {
-		Field fieldNode = objectFactory.createField();
-		fieldNode.setType(parseTypeInfo(fieldDoc.type()));
-		fieldNode.setName(fieldDoc.name());
-		fieldNode.setQualified(fieldDoc.qualifiedName());
-		String comment = fieldDoc.commentText();
-		if (comment.length() > 0) {
-			fieldNode.setComment(comment);
-		}
-		fieldNode.setScope(parseScope(fieldDoc));
-		fieldNode.setFinal(fieldDoc.isFinal());
-		fieldNode.setStatic(fieldDoc.isStatic());
-		fieldNode.setVolatile(fieldDoc.isVolatile());
-		fieldNode.setTransient(fieldDoc.isTransient());
-		fieldNode.setConstant(fieldDoc.constantValueExpression());
-
-		for (AnnotationDesc annotationDesc : fieldDoc.annotations()) {
-			fieldNode.getAnnotation().add(parseAnnotationDesc(annotationDesc, fieldDoc.qualifiedName()));
-		}
-
-		for (Tag tag : fieldDoc.tags()) {
-			fieldNode.getTag().add(parseTag(tag));
-		}
-
-		return fieldNode;
-	}
-
-	protected TypeInfo parseTypeInfo(Type type) {
-		TypeInfo typeInfoNode = objectFactory.createTypeInfo();
-		typeInfoNode.setQualified(type.qualifiedTypeName());
-		String dimension = type.dimension();
-		if (dimension.length() > 0) {
-			typeInfoNode.setDimension(dimension);
-		}
-
-		WildcardType wildcard = type.asWildcardType();
-		if (wildcard != null) {
-			typeInfoNode.setWildcard(parseWildcard(wildcard));
-		}
-
-		ParameterizedType parameterized = type.asParameterizedType();
-		if (parameterized != null) {
-			for (Type typeArgument : parameterized.typeArguments()) {
-				typeInfoNode.getGeneric().add(parseTypeInfo(typeArgument));
-			}
-		}
-
-		return typeInfoNode;
-	}
-
-	protected Wildcard parseWildcard(WildcardType wildcard) {
-		Wildcard wildcardNode = objectFactory.createWildcard();
-
-		for (Type extendType : wildcard.extendsBounds()) {
-			wildcardNode.getExtendsBound().add(parseTypeInfo(extendType));
-		}
-
-		for (Type superType : wildcard.superBounds()) {
-			wildcardNode.getSuperBound().add(parseTypeInfo(superType));
-		}
-
-		return wildcardNode;
-	}
-
-	/**
-	 * Parse type variables for generics
-	 * 
-	 * @param typeVariable
-	 * @return
-	 */
-	protected TypeParameter parseTypeParameter(TypeVariable typeVariable) {
-		TypeParameter typeParameter = objectFactory.createTypeParameter();
-		typeParameter.setName(typeVariable.typeName());
-
-		for (Type bound : typeVariable.bounds()) {
-			typeParameter.getBound().add(bound.qualifiedTypeName());
-		}
-
-		return typeParameter;
-	}
-
-	protected TagInfo parseTag(Tag tagDoc) {
-		TagInfo tagNode = objectFactory.createTagInfo();
-		tagNode.setName(tagDoc.kind());
-		tagNode.setText(tagDoc.text());
-		return tagNode;
-	}
-
-	/**
-	 * Returns string representation of scope
-	 * 
-	 * @param doc
-	 * @return
-	 */
-	protected String parseScope(ProgramElementDoc doc) {
-		if (doc.isPrivate()) {
-			return "private";
-		} else if (doc.isProtected()) {
-			return "protected";
-		} else if (doc.isPublic()) {
-			return "public";
-		}
-		return "";
-	}
+  private final static Logger log = LoggerFactory.getLogger(Parser.class);
+
+  protected Map<String, Package> packages = new TreeMap<String, Package>();
+
+  private ObjectFactory objectFactory = new ObjectFactory();
+
+  private String docRoot;
+
+  /**
+   * The taglets loaded by this doclet.
+   */
+  private Map<String, Taglet> taglets = new HashMap<String, Taglet>();
+
+  /**
+   * Creates new options.
+   */
+  public Parser(String docRoot) {
+    this.docRoot = docRoot;
+    // Load the standard taglets
+    for (InlineTag t : InlineTag.values()) {
+      taglets.put(t.getName(), t);
+    }
+  }
+
+  public String getDocRoot() {
+    return docRoot;
+  }
+
+  /**
+   * The entry point into parsing the javadoc.
+   * 
+   * @param rootDoc
+   *            The RootDoc intstance obtained via the doclet API
+   * @return The root node, containing everything parsed from javadoc doclet
+   */
+  public Root parseRootDoc(RootDoc rootDoc) {
+    Root rootNode = objectFactory.createRoot();
+
+    for (ClassDoc classDoc : rootDoc.classes()) {
+      PackageDoc packageDoc = classDoc.containingPackage();
+
+      Package packageNode = packages.get(packageDoc.name());
+      if (packageNode == null) {
+        packageNode = parsePackage(packageDoc);
+        packages.put(packageDoc.name(), packageNode);
+        rootNode.getPackage().add(packageNode);
+      }
+
+      if (classDoc.isAnnotationType()) {
+        packageNode.getAnnotation().add(parseAnnotationTypeDoc(classDoc));
+      } else if (classDoc.isEnum()) {
+        packageNode.getEnum().add(parseEnum(classDoc));
+      } else if (classDoc.isInterface()) {
+        packageNode.getInterface().add(parseInterface(classDoc));
+      } else {
+        packageNode.getClazz().add(parseClass(classDoc));
+      }
+    }
+
+    return rootNode;
+  }
+
+  /**
+   * Transforms comments on the Doc object into XML.
+   *
+   * @param doc The Doc object.
+   */
+  public String parseComment(Doc holder) {
+    StringBuilder comment = new StringBuilder();
+
+    // Analyse each token and produce comment node
+    for (Tag t : holder.inlineTags()) {
+      Taglet taglet = taglets.get(t.name());
+      if (taglet != null) comment.append(taglet.getOutput(this, t));
+      else comment.append(t.text());
+    }
+
+    return comment.toString();
+  }
+
+  /**
+   * Transforms comments on the Doc object into XML.
+   *
+   * @param tag The Doc object.
+   */
+  public String parseComment(Tag tag) {
+    StringBuilder comment = new StringBuilder();
+
+    // Analyse each token and produce comment node
+    for (Tag t : tag.inlineTags()) {
+      Taglet taglet = taglets.get(t.name());
+      if (taglet != null) comment.append(taglet.getOutput(this, t));
+      else comment.append(t.text());
+    }
+
+    return comment.toString();
+  }
+
+  public Link parseLink(SeeTag tag) {
+    Link seeNode = objectFactory.createLink();
+
+    if (tag.referencedMember() != null) {
+      MemberDoc member = tag.referencedMember();
+      seeNode.setText(member.containingClass().qualifiedName() + "#" + tag.referencedMemberName());
+      seeNode.setHref(member.containingClass().qualifiedName() + "#" + tag.referencedMemberName());
+    } else if (tag.referencedClass() != null) {
+      seeNode.setText(tag.referencedClass().qualifiedName());
+      seeNode.setHref(tag.referencedClass().qualifiedName());
+    } else if (tag.referencedPackage() != null) {
+      seeNode.setText(tag.referencedPackage().name());
+      seeNode.setHref(tag.referencedPackage().name());
+    } else {
+      seeNode.setText(tag.text());
+      seeNode.setHref(tag.text());
+    }
+
+    if (tag.label() != null && !tag.label().isEmpty()) {
+      seeNode.setText(tag.label());
+    }
+
+    return seeNode;
+  }
+
+  protected Package parsePackage(PackageDoc packageDoc) {
+    Package packageNode = objectFactory.createPackage();
+    packageNode.setName(packageDoc.name());
+    packageNode.setComment(parseComment(packageDoc));
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = packageDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      packageNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = packageDoc.tags("@since");
+    if (tags.length > 0) {
+      packageNode.setSince(tags[0].text());
+    }
+
+    tags = packageDoc.tags("@version");
+    if (tags.length > 0) {
+      packageNode.setVersion(tags[0].text());
+    }
+
+    seeTags = packageDoc.seeTags();
+
+    for (int i = 0; i < seeTags.length; i++) {
+      packageNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return packageNode;
+  }
+
+  /**
+   * Parse an annotation.
+   * 
+   * @param annotationTypeDoc
+   *            A AnnotationTypeDoc instance
+   * @return the annotation node
+   */
+  protected Annotation parseAnnotationTypeDoc(ClassDoc classDoc) {
+    Annotation annotationNode = objectFactory.createAnnotation();
+    annotationNode.setName(classDoc.name());
+    annotationNode.setFull(classDoc.qualifiedName());
+    annotationNode.setComment(parseComment(classDoc));
+    annotationNode.setIncluded(classDoc.isIncluded());
+    annotationNode.setScope(parseScope(classDoc));
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = classDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      annotationNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = classDoc.tags("@since");
+    if (tags.length > 0) {
+      annotationNode.setSince(tags[0].text());
+    }
+
+    tags = classDoc.tags("@version");
+    if (tags.length > 0) {
+      annotationNode.setVersion(tags[0].text());
+    }
+
+    tags = classDoc.tags("@author");
+    for (int i = 0; i < tags.length; i++) {
+      annotationNode.getAuthor().add(tags[i].text());
+    }
+
+    seeTags = classDoc.seeTags();
+
+    for (int i = 0; i < seeTags.length; i++) {
+      annotationNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    for (AnnotationTypeElementDoc annotationTypeElementDoc : ((AnnotationTypeDoc) classDoc).elements()) {
+      annotationNode.getElement().add(parseAnnotationTypeElementDoc(annotationTypeElementDoc));
+    }
+
+    return annotationNode;
+  }
+
+  /**
+   * Parse the elements of an annotation
+   * 
+   * @param element
+   *            A AnnotationTypeElementDoc instance
+   * @return the annotation element node
+   */
+  protected AnnotationElement parseAnnotationTypeElementDoc(AnnotationTypeElementDoc annotationTypeElementDoc) {
+    AnnotationElement annotationElementNode = objectFactory.createAnnotationElement();
+    annotationElementNode.setName(annotationTypeElementDoc.name());
+    annotationElementNode.setFull(annotationTypeElementDoc.qualifiedName());
+    annotationElementNode.setComment(parseComment(annotationTypeElementDoc));
+
+    AnnotationValue value = annotationTypeElementDoc.defaultValue();
+    if (value != null) {
+      annotationElementNode.setDefault(value.toString());
+    }
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = annotationTypeElementDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      annotationElementNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = annotationTypeElementDoc.tags("@since");
+    if (tags.length > 0) {
+      annotationElementNode.setSince(tags[0].text());
+    }
+
+    tags = annotationTypeElementDoc.tags("@version");
+    if (tags.length > 0) {
+      annotationElementNode.setVersion(tags[0].text());
+    }
+
+    Return returnNode = objectFactory.createReturn();
+
+    tags = annotationTypeElementDoc.tags("@return");
+    if (tags.length > 0) {
+      returnNode.setComment(parseComment(tags[0]));
+    }
+
+    returnNode.setType(parseTypeInfo(annotationTypeElementDoc.returnType()));
+
+    annotationElementNode.setReturn(returnNode);
+
+    seeTags = annotationTypeElementDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      annotationElementNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return annotationElementNode;
+  }
+
+  protected Enum parseEnum(ClassDoc classDoc) {
+    Enum enumNode = objectFactory.createEnum();
+    enumNode.setName(classDoc.name());
+    enumNode.setFull(classDoc.qualifiedName());
+    enumNode.setComment(parseComment(classDoc));
+    enumNode.setIncluded(classDoc.isIncluded());
+    enumNode.setScope(parseScope(classDoc));
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = classDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      enumNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = classDoc.tags("@since");
+    if (tags.length > 0) {
+      enumNode.setSince(tags[0].text());
+    }
+
+    tags = classDoc.tags("@version");
+    if (tags.length > 0) {
+      enumNode.setVersion(tags[0].text());
+    }
+
+    tags = classDoc.tags("@author");
+    for (int i = 0; i < tags.length; i++) {
+      enumNode.getAuthor().add(tags[i].text());
+    }
+
+    Type superClassType = classDoc.superclassType();
+    if (superClassType != null) {
+      enumNode.setClazz(parseTypeInfo(superClassType));
+    }
+
+    for (Type interfaceType : classDoc.interfaceTypes()) {
+      enumNode.getInterface().add(parseTypeInfo(interfaceType));
+    }
+
+    seeTags = classDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      enumNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    for (FieldDoc field : classDoc.enumConstants()) {
+      enumNode.getValue().add(parseEnumValue(field));
+    }
+
+    return enumNode;
+  }
+
+  /**
+   * Parses an enum type definition
+   * 
+   * @param fieldDoc
+   * @return
+   */
+  protected EnumValue parseEnumValue(FieldDoc fieldDoc) {
+    EnumValue enumValue = objectFactory.createEnumValue();
+    enumValue.setName(fieldDoc.name());
+    enumValue.setComment(parseComment(fieldDoc));
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = fieldDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      enumValue.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = fieldDoc.tags("@since");
+    if (tags.length > 0) {
+      enumValue.setSince(tags[0].text());
+    }
+
+    tags = fieldDoc.tags("@version");
+    if (tags.length > 0) {
+      enumValue.setVersion(tags[0].text());
+    }
+
+    seeTags = fieldDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      enumValue.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return enumValue;
+  }
+
+  protected Interface parseInterface(ClassDoc classDoc) {
+
+    Interface interfaceNode = objectFactory.createInterface();
+    interfaceNode.setName(classDoc.name());
+    interfaceNode.setFull(classDoc.qualifiedName());
+    interfaceNode.setComment(parseComment(classDoc));
+    interfaceNode.setIncluded(classDoc.isIncluded());
+    interfaceNode.setScope(parseScope(classDoc));
+
+    for (TypeVariable typeVariable : classDoc.typeParameters()) {
+      interfaceNode.getGeneric().add(parseGeneric(typeVariable));
+    }
+
+    for (Type interfaceType : classDoc.interfaceTypes()) {
+      interfaceNode.getInterface().add(parseTypeInfo(interfaceType));
+    }
+
+    for (MethodDoc method : classDoc.methods()) {
+      interfaceNode.getMethod().add(parseMethod(method));
+    }
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = classDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      interfaceNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = classDoc.tags("@since");
+    if (tags.length > 0) {
+      interfaceNode.setSince(tags[0].text());
+    }
+
+    tags = classDoc.tags("@version");
+    if (tags.length > 0) {
+      interfaceNode.setVersion(tags[0].text());
+    }
+
+    seeTags = classDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      interfaceNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return interfaceNode;
+  }
+
+  protected Class parseClass(ClassDoc classDoc) {
+
+    Class classNode = objectFactory.createClass();
+    classNode.setName(classDoc.name());
+    classNode.setFull(classDoc.qualifiedName());
+    classNode.setComment(parseComment(classDoc));
+    classNode.setAbstract(classDoc.isAbstract());
+    classNode.setError(classDoc.isError());
+    classNode.setException(classDoc.isException());
+    classNode.setExternalizable(classDoc.isExternalizable());
+    classNode.setIncluded(classDoc.isIncluded());
+    classNode.setSerializable(classDoc.isSerializable());
+    classNode.setScope(parseScope(classDoc));
+
+    for (TypeVariable typeVariable : classDoc.typeParameters()) {
+      classNode.getGeneric().add(parseGeneric(typeVariable));
+    }
+
+    Type superClassType = classDoc.superclassType();
+    if (superClassType != null) {
+      classNode.setClazz(parseTypeInfo(superClassType));
+    }
+
+    for (Type interfaceType : classDoc.interfaceTypes()) {
+      classNode.getInterface().add(parseTypeInfo(interfaceType));
+    }
+
+    for (MethodDoc method : classDoc.methods()) {
+      classNode.getMethod().add(parseMethod(method));
+    }
+
+    for (ConstructorDoc constructor : classDoc.constructors()) {
+      classNode.getConstructor().add(parseConstructor(constructor));
+    }
+
+    for (FieldDoc field : classDoc.fields()) {
+      classNode.getField().add(parseField(field));
+    }
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = classDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      classNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = classDoc.tags("@since");
+    if (tags.length > 0) {
+      classNode.setSince(tags[0].text());
+    }
+
+    tags = classDoc.tags("@version");
+    if (tags.length > 0) {
+      classNode.setVersion(tags[0].text());
+    }
+
+    tags = classDoc.tags("@author");
+    for (int i = 0; i < tags.length; i++) {
+      classNode.getAuthor().add(tags[i].text());
+    }
+
+    seeTags = classDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      classNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return classNode;
+  }
+
+  protected Constructor parseConstructor(ConstructorDoc constructorDoc) {
+    Constructor constructorNode = objectFactory.createConstructor();
+
+    constructorNode.setName(constructorDoc.name());
+    constructorNode.setFull(constructorDoc.qualifiedName());
+    constructorNode.setComment(parseComment(constructorDoc));
+    constructorNode.setScope(parseScope(constructorDoc));
+    constructorNode.setIncluded(constructorDoc.isIncluded());
+    constructorNode.setFinal(constructorDoc.isFinal());
+    constructorNode.setNative(constructorDoc.isNative());
+    constructorNode.setStatic(constructorDoc.isStatic());
+    constructorNode.setSynchronized(constructorDoc.isSynchronized());
+    constructorNode.setVarArgs(constructorDoc.isVarArgs());
+
+    Map<String, String> paramDescriptions = new HashMap<String, String>();
+    ParamTag[] paramTags = constructorDoc.paramTags();
+
+    for (int i = 0; i < paramTags.length; i++) {
+      paramDescriptions.put(paramTags[i].parameterName(), parseComment((Tag) paramTags[i]));
+    }
+
+    for (Parameter parameter : constructorDoc.parameters()) {
+      Param paramNode = parseParam(parameter);
+      paramNode.setComment(paramDescriptions.get(parameter.name()));
+      constructorNode.getParam().add(paramNode);
+    }
+
+    List<ThrowsTag> throwsTags = new ArrayList<ThrowsTag>(Arrays.asList(constructorDoc.throwsTags()));
+
+    for (Type exceptionType : constructorDoc.thrownExceptionTypes()) {
+      Throws throwsNode = objectFactory.createThrows();
+      throwsNode.setType(parseTypeInfo(exceptionType));
+
+      for (int i = 0; i < throwsTags.size(); i++) {
+        ThrowsTag throwsTag = throwsTags.get(i);
+
+        if (throwsTag.exceptionType() == exceptionType) {
+          throwsNode.setComment(parseComment((Tag) throwsTag));
+          throwsTags.remove(i);
+          break;
+        }
+      }
+
+      constructorNode.getThrows().add(throwsNode);
+    }
+
+    for (int i = 0; i < throwsTags.size(); i++) {
+      ThrowsTag throwsTag = throwsTags.get(i);
+      Throws throwsNode = objectFactory.createThrows();
+
+      throwsNode.setType(parseTypeInfo(throwsTag.exceptionType()));
+      throwsNode.setComment(parseComment((Tag) throwsTag));
+
+      constructorNode.getThrows().add(throwsNode);
+    }
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    tags = constructorDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      constructorNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = constructorDoc.tags("@since");
+    if (tags.length > 0) {
+      constructorNode.setSince(tags[0].text());
+    }
+
+    tags = constructorDoc.tags("@version");
+    if (tags.length > 0) {
+      constructorNode.setVersion(tags[0].text());
+    }
+
+    seeTags = constructorDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      constructorNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return constructorNode;
+  }
+
+  protected Method parseMethod(MethodDoc methodDoc) {
+    Method methodNode = objectFactory.createMethod();
+
+    methodNode.setName(methodDoc.name());
+    methodNode.setFull(methodDoc.qualifiedName());
+    methodNode.setComment(parseComment(methodDoc));
+    methodNode.setScope(parseScope(methodDoc));
+    methodNode.setAbstract(methodDoc.isAbstract());
+    methodNode.setIncluded(methodDoc.isIncluded());
+    methodNode.setFinal(methodDoc.isFinal());
+    methodNode.setNative(methodDoc.isNative());
+    methodNode.setStatic(methodDoc.isStatic());
+    methodNode.setSynchronized(methodDoc.isSynchronized());
+    methodNode.setVarArgs(methodDoc.isVarArgs());
+
+    Map<String, String> paramDescriptions = new HashMap<String, String>();
+    ParamTag[] paramTags = methodDoc.paramTags();
+
+    for (int i = 0; i < paramTags.length; i++) {
+      paramDescriptions.put(paramTags[i].parameterName(), parseComment((Tag) paramTags[i]));
+    }
+
+    for (Parameter parameter : methodDoc.parameters()) {
+      Param paramNode = parseParam(parameter);
+      paramNode.setComment(paramDescriptions.get(parameter.name()));
+      methodNode.getParam().add(paramNode);
+    }
+
+    List<ThrowsTag> throwsTags = new ArrayList<ThrowsTag>(Arrays.asList(methodDoc.throwsTags()));
+
+    for (Type exceptionType : methodDoc.thrownExceptionTypes()) {
+      Throws throwsNode = objectFactory.createThrows();
+      throwsNode.setType(parseTypeInfo(exceptionType));
+
+      for (int i = 0; i < throwsTags.size(); i++) {
+        ThrowsTag throwsTag = throwsTags.get(i);
+
+        if (throwsTag.exceptionType() == exceptionType) {
+          throwsNode.setComment(parseComment((Tag) throwsTag));
+          throwsTags.remove(i);
+          break;
+        }
+      }
+
+      methodNode.getThrows().add(throwsNode);
+    }
+
+    for (int i = 0; i < throwsTags.size(); i++) {
+      ThrowsTag throwsTag = throwsTags.get(i);
+      Throws throwsNode = objectFactory.createThrows();
+
+      throwsNode.setType(parseTypeInfo(throwsTag.exceptionType()));
+      throwsNode.setComment(parseComment((Tag) throwsTag));
+
+      methodNode.getThrows().add(throwsNode);
+    }
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    Return returnNode = objectFactory.createReturn();
+
+    tags = methodDoc.tags("@return");
+    if (tags.length > 0) {
+      returnNode.setComment(parseComment(tags[0]));
+    }
+
+    returnNode.setType(parseTypeInfo(methodDoc.returnType()));
+
+    methodNode.setReturn(returnNode);
+
+    tags = methodDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      methodNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = methodDoc.tags("@since");
+    if (tags.length > 0) {
+      methodNode.setSince(tags[0].text());
+    }
+
+    tags = methodDoc.tags("@version");
+    if (tags.length > 0) {
+      methodNode.setVersion(tags[0].text());
+    }
+
+    seeTags = methodDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      methodNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return methodNode;
+  }
+
+  protected Param parseParam(Parameter parameter) {
+    Param paramNode = objectFactory.createParam();
+    paramNode.setName(parameter.name());
+    paramNode.setType(parseTypeInfo(parameter.type()));
+
+    return paramNode;
+  }
+
+  protected Field parseField(FieldDoc fieldDoc) {
+    Field fieldNode = objectFactory.createField();
+    fieldNode.setName(fieldDoc.name());
+    fieldNode.setQualified(fieldDoc.qualifiedName());
+    fieldNode.setComment(parseComment(fieldDoc));
+    fieldNode.setScope(parseScope(fieldDoc));
+    fieldNode.setFinal(fieldDoc.isFinal());
+    fieldNode.setStatic(fieldDoc.isStatic());
+    fieldNode.setVolatile(fieldDoc.isVolatile());
+    fieldNode.setTransient(fieldDoc.isTransient());
+    fieldNode.setDefault(fieldDoc.constantValueExpression());
+
+    Tag[] tags;
+    SeeTag[] seeTags;
+
+    Return returnNode = objectFactory.createReturn();
+
+    tags = fieldDoc.tags("@return");
+    if (tags.length > 0) {
+      returnNode.setComment(parseComment(tags[0]));
+    }
+
+    returnNode.setType(parseTypeInfo(fieldDoc.type()));
+
+    fieldNode.setReturn(returnNode);
+
+    tags = fieldDoc.tags("@deprecated");
+    if (tags.length > 0) {
+      fieldNode.setDeprecated(parseComment(tags[0]));
+    }
+
+    tags = fieldDoc.tags("@since");
+    if (tags.length > 0) {
+      fieldNode.setSince(tags[0].text());
+    }
+
+    tags = fieldDoc.tags("@version");
+    if (tags.length > 0) {
+      fieldNode.setVersion(tags[0].text());
+    }
+
+    seeTags = fieldDoc.seeTags();
+    for (int i = 0; i < seeTags.length; i++) {
+      fieldNode.getLink().add(parseLink(seeTags[i]));
+    }
+
+    return fieldNode;
+  }
+
+  protected TypeInfo parseTypeInfo(Type type) {
+    TypeInfo typeInfoNode = objectFactory.createTypeInfo();
+    typeInfoNode.setFull(type.qualifiedTypeName());
+    String dimension = type.dimension();
+    if (dimension.length() > 0) {
+      typeInfoNode.setDimension(dimension);
+    }
+
+    WildcardType wildcard = type.asWildcardType();
+    if (wildcard != null) {
+      typeInfoNode.setWildcard(parseWildcard(wildcard));
+    }
+
+    ParameterizedType parameterized = type.asParameterizedType();
+    if (parameterized != null) {
+      for (Type typeArgument : parameterized.typeArguments()) {
+        typeInfoNode.getGeneric().add(parseTypeInfo(typeArgument));
+      }
+    }
+
+    return typeInfoNode;
+  }
+
+  protected Wildcard parseWildcard(WildcardType wildcard) {
+    Wildcard wildcardNode = objectFactory.createWildcard();
+
+    for (Type extendType : wildcard.extendsBounds()) {
+      wildcardNode.getExtendsBound().add(parseTypeInfo(extendType));
+    }
+
+    for (Type superType : wildcard.superBounds()) {
+      wildcardNode.getSuperBound().add(parseTypeInfo(superType));
+    }
+
+    return wildcardNode;
+  }
+
+  /**
+   * Parse type variables for generics
+   * 
+   * @param typeVariable
+   * @return
+   */
+  protected Generic parseGeneric(TypeVariable typeVariable) {
+    Generic genericNode = objectFactory.createGeneric();
+    genericNode.setName(typeVariable.typeName());
+
+    for (Type bound : typeVariable.bounds()) {
+      genericNode.getBound().add(bound.qualifiedTypeName());
+    }
+
+    return genericNode;
+  }
+
+  /**
+   * Returns string representation of scope
+   * 
+   * @param doc
+   * @return
+   */
+  protected String parseScope(ProgramElementDoc doc) {
+    if (doc.isPrivate()) {
+      return "private";
+    } else if (doc.isProtected()) {
+      return "protected";
+    } else if (doc.isPublic()) {
+      return "public";
+    }
+    return "";
+  }
 }

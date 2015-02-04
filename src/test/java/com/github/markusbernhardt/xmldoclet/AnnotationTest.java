@@ -40,55 +40,54 @@ public class AnnotationTest extends AbstractTestParent {
 		Annotation annotationNode = packageNode.getAnnotation().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertEquals(packageNode.getComment(), null);
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 1);
 		assertEquals(packageNode.getEnum().size(), 0);
 		assertEquals(packageNode.getInterface().size(), 0);
 		assertEquals(packageNode.getClazz().size(), 0);
 
-		assertEquals(annotationNode.getComment(), null);
+		assertEquals(annotationNode.getComment(), "");
 		assertEquals(annotationNode.getName(), Annotation1.class.getSimpleName());
-		assertEquals(annotationNode.getQualified(), Annotation1.class.getName());
+		assertEquals(annotationNode.getFull(), Annotation1.class.getName());
 		assertEquals(annotationNode.getScope(), "public");
-		assertEquals(annotationNode.getAnnotation().size(), 0);
 		assertEquals(annotationNode.getElement().size(), 0);
 		assertTrue(annotationNode.isIncluded());
 	}
-
-	/**
-	 * testing an annotation with an annotation decorating it
-	 */
-	@Test
-	public void testAnnotation2() {
-		String[] sourceFiles = new String[] { "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation2.java" };
-		Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
-
-		Package packageNode = rootNode.getPackage().get(0);
-		Annotation annotationNode = packageNode.getAnnotation().get(0);
-		AnnotationInstance annotationInstance = annotationNode.getAnnotation().get(0);
-
-		assertEquals(rootNode.getPackage().size(), 1);
-		assertEquals(packageNode.getComment(), null);
-		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
-		assertEquals(packageNode.getAnnotation().size(), 1);
-		assertEquals(packageNode.getEnum().size(), 0);
-		assertEquals(packageNode.getInterface().size(), 0);
-		assertEquals(packageNode.getClazz().size(), 0);
-
-		assertEquals(annotationNode.getComment(), "Annotation2");
-		assertEquals(annotationNode.getName(), Annotation2.class.getSimpleName());
-		assertEquals(annotationNode.getQualified(), Annotation2.class.getName());
-		assertEquals(annotationNode.getScope(), "public");
-		assertEquals(annotationNode.getAnnotation().size(), 1);
-		assertEquals(annotationNode.getElement().size(), 0);
-		assertTrue(annotationNode.isIncluded());
-
-		// test annotation 'deprecated' on class
-		assertEquals(annotationInstance.getQualified(), "java.lang.Deprecated");
-		assertEquals(annotationInstance.getName(), "Deprecated");
-		assertEquals(annotationInstance.getArgument().size(), 0);
-	}
+  //
+  // /**
+  //  * testing an annotation with an annotation decorating it
+  //  */
+  // @Test
+  // public void testAnnotation2() {
+  //   String[] sourceFiles = new String[] { "./src/test/java/com/github/markusbernhardt/xmldoclet/simpledata/Annotation2.java" };
+  //   Root rootNode = executeJavadoc(null, null, null, sourceFiles, null, new String[] { "-dryrun" });
+  //
+  //   Package packageNode = rootNode.getPackage().get(0);
+  //   Annotation annotationNode = packageNode.getAnnotation().get(0);
+  //   AnnotationInstance annotationInstance = annotationNode.getAnnotation().get(0);
+  //
+  //   assertEquals(rootNode.getPackage().size(), 1);
+  //   assertEquals(packageNode.getComment(), null);
+  //   assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
+  //   assertEquals(packageNode.getAnnotation().size(), 1);
+  //   assertEquals(packageNode.getEnum().size(), 0);
+  //   assertEquals(packageNode.getInterface().size(), 0);
+  //   assertEquals(packageNode.getClazz().size(), 0);
+  //
+  //   assertEquals(annotationNode.getComment(), "Annotation2");
+  //   assertEquals(annotationNode.getName(), Annotation2.class.getSimpleName());
+  //   assertEquals(annotationNode.getFull(), Annotation2.class.getName());
+  //   assertEquals(annotationNode.getScope(), "public");
+  //   assertEquals(annotationNode.getAnnotation().size(), 1);
+  //   assertEquals(annotationNode.getElement().size(), 0);
+  //   assertTrue(annotationNode.isIncluded());
+  //
+  //   // test annotation 'deprecated' on class
+  //   assertEquals(annotationInstance.getFull(), "java.lang.Deprecated");
+  //   assertEquals(annotationInstance.getName(), "Deprecated");
+  //   assertEquals(annotationInstance.getArgument().size(), 0);
+  // }
 
 	/**
 	 * testing an annotation with one element field
@@ -103,7 +102,7 @@ public class AnnotationTest extends AbstractTestParent {
 		AnnotationElement element = annotationNode.getElement().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertEquals(packageNode.getComment(), null);
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 1);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -112,16 +111,15 @@ public class AnnotationTest extends AbstractTestParent {
 
 		assertEquals(annotationNode.getComment(), "Annotation3");
 		assertEquals(annotationNode.getName(), Annotation3.class.getSimpleName());
-		assertEquals(annotationNode.getQualified(), Annotation3.class.getName());
+		assertEquals(annotationNode.getFull(), Annotation3.class.getName());
 		assertEquals(annotationNode.getScope(), "public");
-		assertEquals(annotationNode.getAnnotation().size(), 0);
 		assertEquals(annotationNode.getElement().size(), 1);
 		assertTrue(annotationNode.isIncluded());
 
 		// test annotation element
 		assertEquals(element.getName(), "id");
-		assertEquals(element.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Annotation3.id");
-		assertEquals(element.getType().getQualified(), "int");
+		assertEquals(element.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Annotation3.id");
+		assertEquals(element.getReturn().getType().getFull(), "int");
 		assertEquals(element.getDefault(), Integer.toString(3));
 	}
 
@@ -137,7 +135,7 @@ public class AnnotationTest extends AbstractTestParent {
 		Annotation annotationNode = packageNode.getAnnotation().get(0);
 
 		assertEquals(rootNode.getPackage().size(), 1);
-		assertEquals(packageNode.getComment(), null);
+		assertEquals(packageNode.getComment(), "");
 		assertEquals(packageNode.getName(), "com.github.markusbernhardt.xmldoclet.simpledata");
 		assertEquals(packageNode.getAnnotation().size(), 1);
 		assertEquals(packageNode.getEnum().size(), 0);
@@ -146,9 +144,8 @@ public class AnnotationTest extends AbstractTestParent {
 
 		assertEquals(annotationNode.getComment(), "Annotation4");
 		assertEquals(annotationNode.getName(), "Annotation4");
-		assertEquals(annotationNode.getQualified(), "com.github.markusbernhardt.xmldoclet.simpledata.Annotation4");
+		assertEquals(annotationNode.getFull(), "com.github.markusbernhardt.xmldoclet.simpledata.Annotation4");
 		assertEquals(annotationNode.getScope(), "");
-		assertEquals(annotationNode.getAnnotation().size(), 0);
 		assertEquals(annotationNode.getElement().size(), 0);
 		assertTrue(annotationNode.isIncluded());
 	}
