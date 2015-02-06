@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.net.URLEncoder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +96,8 @@ public class Parser {
    * @return The root node, containing everything parsed from javadoc doclet
    */
   public Root parseRootDoc(RootDoc rootDoc) {
-    Root rootNode = objectFactory.createRoot();
+    Root rootNode  = objectFactory.createRoot();
+    ClassTree tree = new ClassTree(rootDoc);
 
     for (ClassDoc classDoc : rootDoc.classes()) {
       PackageDoc packageDoc = classDoc.containingPackage();
@@ -111,9 +114,25 @@ public class Parser {
       } else if (classDoc.isEnum()) {
         packageNode.getEnum().add(parseEnum(classDoc));
       } else if (classDoc.isInterface()) {
-        packageNode.getInterface().add(parseInterface(classDoc));
+        Interface interfaceNode = parseInterface(classDoc);
+
+        for (Object subDoc : tree.subinterfaces(classDoc)) {
+          interfaceNode.getChild().add(parseTypeInfo((Type) subDoc));
+        }
+
+        for (Object subDoc : tree.implementingclasses(classDoc)) {
+          interfaceNode.getImplementation().add(parseTypeInfo((Type) subDoc));
+        }
+
+        packageNode.getInterface().add(interfaceNode);
       } else {
-        packageNode.getClazz().add(parseClass(classDoc));
+        Class classNode = parseClass(classDoc);
+
+        for (Object subDoc : tree.subclasses(classDoc)) {
+          classNode.getChild().add(parseTypeInfo((Type) subDoc));
+        }
+
+        packageNode.getClazz().add(classNode);
       }
     }
 
@@ -156,28 +175,51 @@ public class Parser {
     return comment.toString();
   }
 
+  private String parseIdentifier(Type type) {
+    if (type instanceof TypeVariable) {
+      return parseIdentifier((Doc) type.asClassDoc()) + "#" + type.simpleTypeName();
+    } else {
+      return parseIdentifier((Doc) type.asClassDoc());
+    }
+  }
+
+  private String parseIdentifier(Doc doc) {
+    if (doc instanceof ClassDoc) {
+      ClassDoc classDoc = (ClassDoc) doc;
+
+      return parseIdentifier((Doc) classDoc.containingPackage()) + classDoc.name() + "/";
+    } else if (doc instanceof AnnotationTypeElementDoc) {
+      AnnotationTypeElementDoc annotationTypeElementDoc = (AnnotationTypeElementDoc) doc;
+      return parseIdentifier((Doc) annotationTypeElementDoc.containingClass()) + "#" + annotationTypeElementDoc.name();
+    } else if (doc instanceof FieldDoc) {
+      FieldDoc fieldDoc = (FieldDoc) doc;
+      return parseIdentifier((Doc) fieldDoc.containingClass()) + "#" + fieldDoc.name();
+    } else if (doc instanceof ConstructorDoc) {
+      ConstructorDoc constructorDoc = (ConstructorDoc) doc;
+      return parseIdentifier((Doc) constructorDoc.containingClass()) + "#" + constructorDoc.name() + URLEncoder.encode(constructorDoc.flatSignature());
+    } else if (doc instanceof MethodDoc) {
+      MethodDoc methodDoc = (MethodDoc) doc;
+      return parseIdentifier((Doc) methodDoc.containingClass()) + "#" + methodDoc.name() + URLEncoder.encode(methodDoc.flatSignature());
+    } else {
+      return "/" + doc.name() + "/";
+    }
+  }
+
   public Link parseLink(SeeTag tag) {
     Link seeNode = objectFactory.createLink();
 
     if (tag.referencedMember() != null) {
-      MemberDoc member = tag.referencedMember();
-
-      if (member.isMethod()) {
-        seeNode.setText(member.containingClass().qualifiedName() + "#" + member.name() + ((MethodDoc) member).flatSignature());
-        seeNode.setHref(member.containingClass().qualifiedName() + "#" + member.name() + ((MethodDoc) member).flatSignature());
-      } else if (member.isConstructor()) {
-        seeNode.setText(member.containingClass().qualifiedName() + "#" + member.name() + ((ConstructorDoc) member).flatSignature());
-        seeNode.setHref(member.containingClass().qualifiedName() + "#" + member.name() + ((ConstructorDoc) member).flatSignature());
-      } else {
-        seeNode.setText(member.containingClass().qualifiedName() + "#" + member.name());
-        seeNode.setHref(member.containingClass().qualifiedName() + "#" + member.name());
-      }
+      String identifier = parseIdentifier((Doc) tag.referencedMember());
+      seeNode.setText(tag.referencedClass().name() + "#" + tag.referencedMemberName());
+      seeNode.setHref(identifier);
     } else if (tag.referencedClass() != null) {
-      seeNode.setText(tag.referencedClass().qualifiedName());
-      seeNode.setHref(tag.referencedClass().qualifiedName());
+      String identifier = parseIdentifier((Doc) tag.referencedClass());
+      seeNode.setText(tag.referencedClass().name());
+      seeNode.setHref(identifier);
     } else if (tag.referencedPackage() != null) {
+      String identifier = parseIdentifier((Doc) tag.referencedPackage());
       seeNode.setText(tag.referencedPackage().name());
-      seeNode.setHref(tag.referencedPackage().name());
+      seeNode.setHref(identifier);
     } else {
       seeNode.setText(tag.text());
       seeNode.setHref(tag.text());
@@ -193,7 +235,7 @@ public class Parser {
   protected Package parsePackage(PackageDoc packageDoc) {
     Package packageNode = objectFactory.createPackage();
     packageNode.setName(packageDoc.name());
-    packageNode.setId(packageDoc.name());
+    packageNode.setIdentifier(parseIdentifier((Doc) packageDoc));
     packageNode.setComment(parseComment(packageDoc));
 
     Tag[] tags;
@@ -233,7 +275,8 @@ public class Parser {
   protected Annotation parseAnnotationTypeDoc(ClassDoc classDoc) {
     Annotation annotationNode = objectFactory.createAnnotation();
     annotationNode.setName(classDoc.name());
-    annotationNode.setId(classDoc.qualifiedName());
+    annotationNode.setDisplayName(classDoc.simpleTypeName());
+    annotationNode.setIdentifier(parseIdentifier((Doc) classDoc));
     annotationNode.setFull(classDoc.qualifiedName());
     annotationNode.setComment(parseComment(classDoc));
     annotationNode.setScope(parseScope(classDoc));
@@ -284,7 +327,8 @@ public class Parser {
   protected AnnotationElement parseAnnotationTypeElementDoc(AnnotationTypeElementDoc annotationTypeElementDoc) {
     AnnotationElement annotationElementNode = objectFactory.createAnnotationElement();
     annotationElementNode.setName(annotationTypeElementDoc.name());
-    annotationElementNode.setId(annotationTypeElementDoc.containingClass().qualifiedName() + "#" + annotationTypeElementDoc.name());
+    annotationElementNode.setIdentifier(parseIdentifier((Doc) annotationTypeElementDoc));
+    annotationElementNode.setId(annotationTypeElementDoc.name());
     annotationElementNode.setFull(annotationTypeElementDoc.qualifiedName());
     annotationElementNode.setComment(parseComment(annotationTypeElementDoc));
 
@@ -333,7 +377,8 @@ public class Parser {
   protected Enum parseEnum(ClassDoc classDoc) {
     Enum enumNode = objectFactory.createEnum();
     enumNode.setName(classDoc.name());
-    enumNode.setId(classDoc.qualifiedName());
+    enumNode.setDisplayName(classDoc.simpleTypeName());
+    enumNode.setIdentifier(parseIdentifier((Doc) classDoc));
     enumNode.setFull(classDoc.qualifiedName());
     enumNode.setComment(parseComment(classDoc));
     enumNode.setScope(parseScope(classDoc));
@@ -391,7 +436,8 @@ public class Parser {
   protected EnumValue parseEnumValue(FieldDoc fieldDoc) {
     EnumValue enumValue = objectFactory.createEnumValue();
     enumValue.setName(fieldDoc.name());
-    enumValue.setId(fieldDoc.containingClass().qualifiedName() + "#" + fieldDoc.name());
+    enumValue.setIdentifier(parseIdentifier((Doc) fieldDoc));
+    enumValue.setId(fieldDoc.name());
     enumValue.setComment(parseComment(fieldDoc));
 
     Tag[] tags;
@@ -424,7 +470,8 @@ public class Parser {
 
     Interface interfaceNode = objectFactory.createInterface();
     interfaceNode.setName(classDoc.name());
-    interfaceNode.setId(classDoc.qualifiedName());
+    interfaceNode.setDisplayName(classDoc.simpleTypeName());
+    interfaceNode.setIdentifier(parseIdentifier((Doc) classDoc));
     interfaceNode.setFull(classDoc.qualifiedName());
     interfaceNode.setComment(parseComment(classDoc));
     interfaceNode.setScope(parseScope(classDoc));
@@ -471,7 +518,8 @@ public class Parser {
 
     Class classNode = objectFactory.createClass();
     classNode.setName(classDoc.name());
-    classNode.setId(classDoc.qualifiedName());
+    classNode.setDisplayName(classDoc.simpleTypeName());
+    classNode.setIdentifier(parseIdentifier((Doc) classDoc));
     classNode.setFull(classDoc.qualifiedName());
     classNode.setComment(parseComment(classDoc));
     classNode.setAbstract(classDoc.isAbstract());
@@ -541,7 +589,8 @@ public class Parser {
     Constructor constructorNode = objectFactory.createConstructor();
 
     constructorNode.setName(constructorDoc.name());
-    constructorNode.setId(constructorDoc.containingClass().qualifiedName() + "#" + constructorDoc.name() + constructorDoc.flatSignature());
+    constructorNode.setIdentifier(parseIdentifier((Doc) constructorDoc));
+    constructorNode.setId(constructorDoc.name() + URLEncoder.encode(constructorDoc.flatSignature()));
     constructorNode.setFull(constructorDoc.qualifiedName());
     constructorNode.setComment(parseComment(constructorDoc));
     constructorNode.setScope(parseScope(constructorDoc));
@@ -623,7 +672,8 @@ public class Parser {
     Method methodNode = objectFactory.createMethod();
 
     methodNode.setName(methodDoc.name());
-    methodNode.setId(methodDoc.containingClass().qualifiedName() + "#" + methodDoc.name() + methodDoc.flatSignature());
+    methodNode.setIdentifier(parseIdentifier((Doc) methodDoc));
+    methodNode.setId(methodDoc.name() + URLEncoder.encode(methodDoc.flatSignature()));
     methodNode.setFull(methodDoc.qualifiedName());
     methodNode.setComment(parseComment(methodDoc));
     methodNode.setScope(parseScope(methodDoc));
@@ -724,7 +774,8 @@ public class Parser {
   protected Field parseField(FieldDoc fieldDoc) {
     Field fieldNode = objectFactory.createField();
     fieldNode.setName(fieldDoc.name());
-    fieldNode.setId(fieldDoc.containingClass().qualifiedName() + "#" + fieldDoc.name());
+    fieldNode.setIdentifier(parseIdentifier((FieldDoc) fieldDoc));
+    fieldNode.setId(fieldDoc.name());
     fieldNode.setFull(fieldDoc.qualifiedName());
     fieldNode.setComment(parseComment(fieldDoc));
     fieldNode.setScope(parseScope(fieldDoc));
@@ -773,6 +824,13 @@ public class Parser {
 
   protected TypeInfo parseTypeInfo(Type type) {
     TypeInfo typeInfoNode = objectFactory.createTypeInfo();
+    typeInfoNode.setName(type.simpleTypeName());
+    typeInfoNode.setDisplayName(type.simpleTypeName());
+    if (type.isPrimitive()) {
+      typeInfoNode.setIdentifier(type.qualifiedTypeName());
+    } else {
+      typeInfoNode.setIdentifier(parseIdentifier(type));
+    }
     typeInfoNode.setFull(type.qualifiedTypeName());
     String dimension = type.dimension();
     if (dimension.length() > 0) {
@@ -817,9 +875,11 @@ public class Parser {
   protected Generic parseGeneric(TypeVariable typeVariable) {
     Generic genericNode = objectFactory.createGeneric();
     genericNode.setName(typeVariable.typeName());
+    genericNode.setIdentifier(parseIdentifier((Type) typeVariable));
+    genericNode.setId(typeVariable.simpleTypeName());
 
     for (Type bound : typeVariable.bounds()) {
-      genericNode.getBound().add(bound.qualifiedTypeName());
+      genericNode.getBound().add(parseTypeInfo(bound));
     }
 
     return genericNode;

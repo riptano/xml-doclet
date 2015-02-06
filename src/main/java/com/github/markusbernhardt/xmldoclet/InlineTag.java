@@ -56,7 +56,7 @@ public enum InlineTag implements Taglet {
 
     @Override
     public String getOutput(Parser parser, Tag tag) {
-      return "<code><![CDATA["+tag.text()+"]]></code>";
+      return "<code>"+tag.text()+"</code>";
     }
 
   },
@@ -300,7 +300,7 @@ public enum InlineTag implements Taglet {
 
     @Override
     public String getOutput(Parser parser, Tag tag) {
-      return "<![CDATA["+tag.text()+"]]>";
+      return tag.text();
     }
 
   },

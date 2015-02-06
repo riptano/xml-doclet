@@ -28,7 +28,7 @@
 				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="id" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="link">
@@ -50,7 +50,8 @@
 				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="id" type="xs:string" />
+		<xs:attribute name="display-name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 	</xs:complexType>
@@ -66,6 +67,7 @@
 			<xs:element name="return" type="return" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="id" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="default" type="xs:string" />
@@ -102,7 +104,8 @@
 				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="id" type="xs:string" />
+		<xs:attribute name="display-name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 	</xs:complexType>
@@ -117,6 +120,7 @@
 				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="id" type="xs:string" />
 	</xs:complexType>
 
@@ -136,9 +140,14 @@
 				maxOccurs="unbounded" />
 			<xs:element name="method" type="method" minOccurs="0"
 				maxOccurs="unbounded" />
+			<xs:element name="child" type="typeInfo" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="implementation" type="typeInfo" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="id" type="xs:string" />
+		<xs:attribute name="display-name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 	</xs:complexType>
@@ -164,9 +173,12 @@
 				maxOccurs="unbounded" />
 			<xs:element name="field" type="field" minOccurs="0"
 				maxOccurs="unbounded" />
+			<xs:element name="child" type="typeInfo" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="id" type="xs:string" />
+		<xs:attribute name="display-name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
 		<xs:attribute name="abstract" type="xs:boolean" default="false" />
@@ -192,6 +204,7 @@
 				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="id" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
@@ -218,6 +231,7 @@
 			<xs:element name="return" type="return" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="id" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
@@ -250,6 +264,7 @@
 			<xs:element name="default" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="id" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="scope" type="scope" />
@@ -265,16 +280,21 @@
 			<xs:element name="generic" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="display-name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
 		<xs:attribute name="full" type="xs:string" />
 		<xs:attribute name="dimension" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="generic">
 		<xs:sequence>
-			<xs:element name="bound" type="xs:string" minOccurs="0"
+			<xs:element name="bound" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="identifier" type="xs:string" />
+		<xs:attribute name="id" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="wildcard">
