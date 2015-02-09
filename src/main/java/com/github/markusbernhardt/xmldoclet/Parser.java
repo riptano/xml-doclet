@@ -208,21 +208,20 @@ public class Parser {
   public Link parseLink(SeeTag tag) {
     Link seeNode = objectFactory.createLink();
 
-    if (tag.referencedMember() != null) {
+    if (tag.referencedMember() != null && tag.referencedMember().isIncluded()) {
       String identifier = parseIdentifier((Doc) tag.referencedMember());
       seeNode.setText(tag.referencedClass().name() + "#" + tag.referencedMemberName());
       seeNode.setHref(identifier);
-    } else if (tag.referencedClass() != null) {
+    } else if (tag.referencedClass() != null && tag.referencedClass().isIncluded()) {
       String identifier = parseIdentifier((Doc) tag.referencedClass());
       seeNode.setText(tag.referencedClass().name());
       seeNode.setHref(identifier);
-    } else if (tag.referencedPackage() != null) {
+    } else if (tag.referencedPackage() != null && tag.referencedPackage().isIncluded()) {
       String identifier = parseIdentifier((Doc) tag.referencedPackage());
       seeNode.setText(tag.referencedPackage().name());
       seeNode.setHref(identifier);
     } else {
       seeNode.setText(tag.text());
-      seeNode.setHref(tag.text());
     }
 
     if (tag.label() != null && !tag.label().isEmpty()) {
