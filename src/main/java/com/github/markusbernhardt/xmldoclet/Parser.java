@@ -411,6 +411,14 @@ public class Parser {
       enumNode.getInterface().add(parseTypeInfo(interfaceType));
     }
 
+    for (MethodDoc method : classDoc.methods()) {
+      enumNode.getMethod().add(parseMethod(method));
+    }
+
+    for (FieldDoc field : classDoc.fields()) {
+      enumNode.getField().add(parseField(field));
+    }
+
     seeTags = classDoc.seeTags();
     for (int i = 0; i < seeTags.length; i++) {
       enumNode.getLink().add(parseLink(seeTags[i]));

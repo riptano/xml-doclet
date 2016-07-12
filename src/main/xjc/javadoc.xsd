@@ -100,6 +100,10 @@
 			<xs:element name="class" type="typeInfo" minOccurs="0" />
 			<xs:element name="interface" type="typeInfo" minOccurs="0"
 				maxOccurs="unbounded" />
+			<xs:element name="method" type="method" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="field" type="field" minOccurs="0"
+				maxOccurs="unbounded" />
 			<xs:element name="value" type="enumValue" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:sequence>
