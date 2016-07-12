@@ -10,7 +10,6 @@ import com.github.markusbernhardt.xmldoclet.simpledata.Annotation2;
 import com.github.markusbernhardt.xmldoclet.simpledata.Annotation3;
 import com.github.markusbernhardt.xmldoclet.xjc.Annotation;
 import com.github.markusbernhardt.xmldoclet.xjc.AnnotationElement;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
 

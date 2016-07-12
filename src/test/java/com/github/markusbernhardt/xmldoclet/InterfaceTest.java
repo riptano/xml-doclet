@@ -11,12 +11,10 @@ import com.github.markusbernhardt.xmldoclet.simpledata.Interface1;
 import com.github.markusbernhardt.xmldoclet.simpledata.Interface2;
 import com.github.markusbernhardt.xmldoclet.simpledata.Interface3;
 import com.github.markusbernhardt.xmldoclet.simpledata.Interface4;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Interface;
 import com.github.markusbernhardt.xmldoclet.xjc.Method;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
-import com.github.markusbernhardt.xmldoclet.xjc.TypeParameter;
 
 @SuppressWarnings("deprecation")
 public class InterfaceTest extends AbstractTestParent {

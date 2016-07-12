@@ -12,11 +12,8 @@ import java.util.List;
 import org.junit.Test;
 
 import com.github.markusbernhardt.xmldoclet.simpledata.Annotation12;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationArgument;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Class;
 import com.github.markusbernhardt.xmldoclet.xjc.Method;
-import com.github.markusbernhardt.xmldoclet.xjc.MethodParameter;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
 import com.github.markusbernhardt.xmldoclet.xjc.TypeInfo;

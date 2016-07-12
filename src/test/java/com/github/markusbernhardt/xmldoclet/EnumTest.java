@@ -6,10 +6,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.github.markusbernhardt.xmldoclet.simpledata.Annotation12;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationArgument;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Enum;
-import com.github.markusbernhardt.xmldoclet.xjc.EnumConstant;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
 

@@ -16,8 +16,6 @@ import com.github.markusbernhardt.xmldoclet.simpledata.Class6;
 import com.github.markusbernhardt.xmldoclet.simpledata.Class7;
 import com.github.markusbernhardt.xmldoclet.simpledata.Class8;
 import com.github.markusbernhardt.xmldoclet.simpledata.Class9;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationArgument;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Class;
 import com.github.markusbernhardt.xmldoclet.xjc.Constructor;
 import com.github.markusbernhardt.xmldoclet.xjc.Field;

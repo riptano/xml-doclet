@@ -13,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.markusbernhardt.xmldoclet.xjc.Annotation;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationArgument;
 import com.github.markusbernhardt.xmldoclet.xjc.AnnotationElement;
-import com.github.markusbernhardt.xmldoclet.xjc.AnnotationInstance;
 import com.github.markusbernhardt.xmldoclet.xjc.Class;
 import com.github.markusbernhardt.xmldoclet.xjc.Constructor;
 import com.github.markusbernhardt.xmldoclet.xjc.Enum;
@@ -27,7 +25,6 @@ import com.github.markusbernhardt.xmldoclet.xjc.Param;
 import com.github.markusbernhardt.xmldoclet.xjc.ObjectFactory;
 import com.github.markusbernhardt.xmldoclet.xjc.Package;
 import com.github.markusbernhardt.xmldoclet.xjc.Root;
-import com.github.markusbernhardt.xmldoclet.xjc.TagInfo;
 import com.github.markusbernhardt.xmldoclet.xjc.TypeInfo;
 import com.github.markusbernhardt.xmldoclet.xjc.Generic;
 import com.github.markusbernhardt.xmldoclet.xjc.Wildcard;
